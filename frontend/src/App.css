@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+a.active hr{
+  display: block;
+}
+/* Add this to your CSS file */
+.swiper-button-next,
+.swiper-button-prev {
+  @apply text-white bg-black/30 p-4 rounded-full hover:bg-black/50 transition-colors;
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 1.5rem !important;
+}
+
+.thumbnail-slider .swiper-slide-thumb-active {
+  @apply border-blue-500;
+}
+.autoplay-progress {
+  transition: width 0.1s linear;
+}
+
+.shadow-lg {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.thumbnail-slider {
+  width: 100%;
+  overflow: hidden; /* Prevent thumbnails from overflowing */
+}
+
+.thumbnail-slider .swiper-slide {
+  width: auto; /* Allow thumbnails to adjust their width */
+}
+.thumbnail-prev,
+.thumbnail-next {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.thumbnail-prev:hover,
+.thumbnail-next:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}

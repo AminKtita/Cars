@@ -1,0 +1,85 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  scrapy:
+    build:
+      context: ./carscraper
+      dockerfile: Dockerfile
+    container_name: scrapy
+    depends_on:
+      - mongo
+    volumes:
+      - ./carscraper:/app
+    environment:
+      MONGO_URI: "mongodb://mongo:27017"
+      MONGO_DATABASE: "scrapy_data"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    depends_on:
+      - mongo
+    ports:
+      - "8000:8000"
+    environment:
+      MONGO_URI: "mongodb://mongo:27017"
+      MONGO_DATABASE: "scrapy_data"
+
+  scrapy-api:
+    image: cars-scrapy_api
+    container_name: scrapy_api
+    restart: always
+    ports:
+      - "8002:8002"
+    depends_on:
+      - mongo
+    command: uvicorn main:app --host 0.0.0.0 --port 8002
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev", "--", "--host"]
+
+  node-backend:
+    build:
+      context: ./node-backend
+      dockerfile: Dockerfile
+    container_name: node-backend
+    depends_on:
+      - mongo
+    ports:
+      - "8001:8000"
+    environment:
+      MONGO_URI: "mongodb://mongo:27017/scraped_data"
+
+  cron:
+    build:
+      context: ./cronjobs
+      dockerfile: Dockerfile
+    container_name: cron
+    depends_on:
+      - scrapy-api
+    volumes:
+      - ./cronjobs/cron.log:/var/log/cron.log
+    restart: always
+    
+
+volumes:
+  mongo_data:
