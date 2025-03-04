@@ -5,7 +5,7 @@ import { CarContext } from '../context/CarContext';
 import { FilterSection } from '../components/FilterSection';
 import { SortSection } from '../components/SortSection';
 import { CarGrid } from '../components/CarGrid';
-import { Pagination } from '../components/Pagination'; // Import the Pagination component
+import { Pagination } from '../components/Pagination'; 
 
 export const CarList = () => {
   const [cars, setCars] = useState([]);

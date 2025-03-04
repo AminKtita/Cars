@@ -1,5 +1,0 @@
-SHELL=/bin/sh
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
-# Run the cron job every minute
-0 1 * * * root /usr/local/bin/run_cron.sh

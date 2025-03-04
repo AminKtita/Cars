@@ -69,17 +69,14 @@ services:
     environment:
       MONGO_URI: "mongodb://mongo:27017/scraped_data"
 
-  cron:
+  node-cron:
     build:
-      context: ./cronjobs
+      context: ./node-cron-job
       dockerfile: Dockerfile
-    container_name: cron
+    container_name: node-cron
     depends_on:
       - scrapy-api
-    volumes:
-      - ./cronjobs/cron.log:/var/log/cron.log
     restart: always
-    
 
 volumes:
   mongo_data:
