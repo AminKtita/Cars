@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Title } from '../components/Title';
+import { Title } from './Title';
 import { getCars } from '../services/api';
-import { CarItem } from '../components/CarItem';
+import { CarItem } from './CarItem';
 
 export const RecentlyAdded = () => {
   const [latestCars, setLatestCars] = useState([]);
