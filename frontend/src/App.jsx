@@ -1,10 +1,12 @@
-import React , {useContext,useState} from 'react'
 import { Route, Routes } from 'react-router-dom'
 import {Home} from './pages/Home'
 import { Navbar } from './components/Navbar'
 import { CarList } from './pages/CarList'
 import { CarDetail } from './pages/CarDetail'
 import { SearchBar } from './components/SearchBar'
+import { LoginSignUp } from './pages/LoginSignUp'
+import { ProtectedRoute } from './components/ProtectedRoute';
+
 
 export const App = () => {
 
@@ -15,8 +17,10 @@ export const App = () => {
       <SearchBar />
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/cars' element={<CarList />} />
-        <Route path='/car/:CarId' element={<CarDetail />} />
+        <Route path='/login' element={<LoginSignUp />} />
+        <Route path='/cars' element={<ProtectedRoute><CarList /></ProtectedRoute>} />
+        <Route path='/car/:CarId' element={<ProtectedRoute><CarDetail /></ProtectedRoute>} />
+        
       </Routes>
     </div>
   )

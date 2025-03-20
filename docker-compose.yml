@@ -68,6 +68,7 @@ services:
       - "8001:8000"
     environment:
       MONGO_URI: "mongodb://mongo:27017/scraped_data"
+      JWT_SECRET: "your_jwt_secret_key"
 
   node-cron:
     build:
