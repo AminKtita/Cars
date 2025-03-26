@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CarContext } from '../context/CarContext';
 import { LoginPromptModal } from '../Modals/Modal'; // Import the LoginPromptModal
+import { isTokenExpired } from '../services/api';
 
 export const CarItem = ({ id, image, name, price, brand, model }) => {
   const { currency } = useContext(CarContext);
@@ -9,14 +10,17 @@ export const CarItem = ({ id, image, name, price, brand, model }) => {
   const navigate = useNavigate(); // Use navigate for programmatic navigation
 
   const handleClick = () => {
-    const isLoggedIn = !!localStorage.getItem('token'); // Check if the user is logged in
+    // Check both storage locations
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const isLoggedIn = token ? !isTokenExpired(token) : false;
+  
     if (isLoggedIn) {
-      navigate(`/car/${id}`); // Navigate to the car details page
+      navigate(`/car/${id}`);
     } else {
-      setShowLoginPrompt(true); // Show the login prompt modal
+      setShowLoginPrompt(true);
     }
   };
-
+  
   return (
     <>
       {/* Car Item Container */}

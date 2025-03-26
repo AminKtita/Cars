@@ -7,10 +7,9 @@ export const Pagination = ({
   onPageChange,
   onItemsPerPageChange,
 }) => {
-  // Generate page numbers to display
   const getPageNumbers = () => {
     const pages = [];
-    const maxVisiblePages = 5; // Number of visible page numbers
+    const maxVisiblePages = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
@@ -26,64 +25,78 @@ export const Pagination = ({
   };
 
   return (
-    <div className='flex justify-between items-center mt-6'>
-      {/* Items per page dropdown */}
+    <div className='flex flex-col md:flex-row gap-4 justify-between items-center mt-6'>
+      {/* Left Section - Items per page */}
       <div className='flex items-center gap-2'>
-        <span>Items per page:</span>
+        <span className='text-sm md:text-base'>Items per page:</span>
         <select
           value={itemsPerPage}
           onChange={onItemsPerPageChange}
-          className='p-2 border border-gray-300 rounded'
+          className='p-1 md:p-2 text-sm md:text-base border border-gray-300 rounded'
         >
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={30}>30</option>
-          <option value={50}>50</option>
+          {[10, 20, 30, 50].map((size) => (
+            <option key={size} value={size}>{size}</option>
+          ))}
         </select>
       </div>
 
-      {/* Page indicator */}
-      <div className='flex items-center gap-2'>
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
+      {/* Center Section - Page Info */}
+      <div className='text-sm md:text-base whitespace-nowrap'>
+        Page {currentPage} of {totalPages}
       </div>
 
-      {/* Pagination buttons */}
-      <div className='flex gap-2'>
-        <button
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className='p-2 border border-gray-300 rounded disabled:opacity-50'
-        >
-          Previous
-        </button>
-        {getPageNumbers().map((page) => (
-          <button
-            key={page}
-            onClick={() => onPageChange(page)}
-            className={`p-2 border border-gray-300 rounded ${
-              currentPage === page ? 'bg-gray-200' : ''
-            }`}
-          >
-            {page}
-          </button>
-        ))}
-        <button
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className='p-2 border border-gray-300 rounded disabled:opacity-50'
-        >
-          Next
-        </button>
-        <button
-          onClick={() => onPageChange(totalPages)}
-          disabled={currentPage === totalPages}
-          className='p-2 border border-gray-300 rounded disabled:opacity-50'
-        >
-          Last
-        </button>
+      {/* Right Section - Pagination Controls */}
+      <div className='w-full md:w-auto flex items-center gap-1 md:gap-2 overflow-x-auto'>
+        <div className='flex items-center gap-1 md:gap-2 flex-nowrap'>
+          <NavButton
+            onClick={() => onPageChange(1)}
+            disabled={currentPage === 1}
+            title='First'
+          />
+          <NavButton
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            title='Previous'
+          />
+
+          {/* Page Numbers */}
+          <div className='flex gap-1 md:gap-2'>
+            {getPageNumbers().map((page) => (
+              <button
+                key={page}
+                onClick={() => onPageChange(page)}
+                className={`min-w-[32px] p-1 md:p-2 text-sm md:text-base border border-gray-300 rounded ${
+                  currentPage === page ? 'bg-gray-200 font-medium' : ''
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          <NavButton
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            title='Next'
+          />
+          <NavButton
+            onClick={() => onPageChange(totalPages)}
+            disabled={currentPage === totalPages}
+            title='Last'
+          />
+        </div>
       </div>
     </div>
   );
 };
+
+const NavButton = ({ onClick, disabled, title }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`px-2 md:px-3 py-1 md:py-2 text-sm md:text-base border border-gray-300 rounded disabled:opacity-50
+      whitespace-nowrap min-w-[60px] md:min-w-[80px]`}
+  >
+    {title}
+  </button>
+);

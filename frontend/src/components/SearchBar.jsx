@@ -2,11 +2,27 @@ import React, { useContext, useEffect, useState } from 'react';
 import { CarContext } from '../context/CarContext';
 import { assets } from '../assets/assets';
 import { useLocation } from 'react-router-dom';
+import { logUserAction } from '../services/api';
+
 
 export const SearchBar = () => {
   const { search, setSearch, showSearch, setShowSearch } = useContext(CarContext);
   const [visible, setVisible] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (search.trim()) {
+        logUserAction({
+          actionType: 'search',
+          details: { searchQuery: search }
+        });
+      }
+    }, 500); // Debounce for 500ms
+
+    return () => clearTimeout(timeoutId);
+  }, [search]);
+
 
   useEffect(() => {
     if (location.pathname.includes('cars')) {

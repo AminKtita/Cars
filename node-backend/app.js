@@ -1,10 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); // Import the cors package
+const cors = require('cors'); 
 const carRoutes = require('./routes/cars');
 const brandLogoRoutes = require('./routes/brandLogos');
 const authRoutes = require("./routes/auth");
 const authMiddleware = require("./middleware/authMiddleware");
+const userActionsRoutes = require('./routes/userActions');
+const favoriteRoutes = require('./routes/favorites');
+const filterPresetRoutes = require('./routes/filterPresets');
+
+
 require("dotenv").config();
 
 const app = express();
@@ -17,7 +22,7 @@ app.use(cors({
   origin: 'http://localhost:5173', // Allow requests from this origin
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
   credentials: true, // Allow cookies and credentials
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
+  allowedHeaders: ['Content-Type', 'Authorization','X-Requested-With','Accept'], // Allow these headers
 }));
 
 // Handle preflight requests
@@ -32,6 +37,11 @@ mongoose.connect('mongodb://mongo:27017/scraped_data')
 app.use('/cars', carRoutes);
 app.use('/brand-logos', brandLogoRoutes);
 app.use("/api/auth", authRoutes);
+app.use('/api/user-actions', userActionsRoutes);
+app.use('/api/favorites', favoriteRoutes);
+app.use('/api/filter-presets', filterPresetRoutes);
+
+
 
 // Protected route example
 app.get("/api/profile", authMiddleware, (req, res) => {

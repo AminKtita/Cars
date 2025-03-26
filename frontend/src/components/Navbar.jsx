@@ -2,28 +2,47 @@ import React, { useContext, useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { assets } from '../assets/assets';
 import { CarContext } from '../context/CarContext';
+import { isTokenExpired ,login} from '../services/api'; 
 
 export const Navbar = () => {
-  const [visible, setVisible] = useState(false); // For mobile menu
-  const [showDropdown, setShowDropdown] = useState(false); // For profile dropdown
+  const [visible, setVisible] = useState(false); 
+  const [showDropdown, setShowDropdown] = useState(false); 
   const { setShowSearch } = useContext(CarContext);
   const navigate = useNavigate();
-  const dropdownRef = useRef(null); // Ref for dropdown menu
+  const dropdownRef = useRef(null); 
 
   // Check if the user is logged in
-  const isLoggedIn = !!localStorage.getItem('token');
-  const username = localStorage.getItem('username') || 'User'; // Get the username from localStorage
-
-  // Handle login/logout
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const isLoggedIn = token ? !isTokenExpired(token) : false;
+  
+  // Updated username retrieval
+  const username = localStorage.getItem('username') || sessionStorage.getItem('username') || 'User';
   const handleLogin = () => {
     navigate('/login');
   };
-
+  
+  // Updated logout handler
   const handleLogout = () => {
+    // Clear all storage locations
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('username');
     navigate('/');
+    window.location.reload(); // Force refresh to update all components
   };
+
+  // Add storage listener to update state
+  useEffect(() => {
+    const handleStorageChange = () => {
+      // Force re-render when token changes
+      setShowDropdown(false);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -50,6 +69,10 @@ export const Navbar = () => {
       <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
         <NavLink className='flex flex-col items-center gap-1' to={`/`}>
           <p>HOME</p>
+          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
+        </NavLink>
+        <NavLink className='flex flex-col items-center gap-1' to={`/cars`}>
+          <p>BUY</p>
           <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
         </NavLink>
         <NavLink className='flex flex-col items-center gap-1'>

@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { login } from '../services/api'; // Import the login function
+import { useNavigate } from 'react-router-dom'; 
+import { login } from '../services/api';
 
 export const LoginForm = ({ onToggleForm }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
 
   const handleLogin = async () => {
     try {
-      const data = await login(email, password, rememberMe); // Use the login function
+      const data = await login(email, password, rememberMe);
       if (data.token) {
-        localStorage.setItem("token", data.token); // Store token in localStorage
-        localStorage.setItem("username", data.username); // Store username in localStorage
-        navigate("/"); // Redirect to the home page
-      } else {
-        alert(data.error);
+        // Use sessionStorage for temporary sessions
+        const storage = rememberMe ? localStorage : sessionStorage;
+        storage.setItem("token", data.token);
+        storage.setItem("username", data.username);
+        navigate("/");
       }
     } catch (err) {
-      alert("An error occurred. Please try again.");
+      alert(err.message || "Login failed");
     }
   };
-
+  
   return (
     <div className='bg-white px-10 py-20 rounded-3xl border-2 border-gray-200'>
       <h1 className='text-5xl font-semibold'>Welcome Back</h1>

@@ -1,4 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { PriceRangeFilter } from './FiltersComponents/PriceRangeFilter';
+import { BrandFilter } from './FiltersComponents/BrandFilter';
+import { ModelFilter } from './FiltersComponents/ModelFilter';
+import { TransmissionFilter } from './FiltersComponents/TransmissionFilter';
+import { FuelFilter } from './FiltersComponents/FuelFilter';
+import { YearFilter } from './FiltersComponents/YearFilter';
+import { MileageFilter } from './FiltersComponents/MileageFilter';
+import { PowerCVFilter } from './FiltersComponents/PowerCVFilter';
 import { assets } from '../assets/assets';
 
 export const FilterSection = ({
@@ -6,191 +14,165 @@ export const FilterSection = ({
   setShowFilter,
   brands,
   models,
-  selectedBrand,
-  setSelectedBrand,
+  selectedBrands,
+  setSelectedBrands,
   selectedModel,
   setSelectedModel,
   minPrice,
   setMinPrice,
   maxPrice,
   setMaxPrice,
+  selectedTransmissions,
+  handleTransmissionSelect,
+  selectedFuelTypes,
+  handleFuelSelect,
+  resetFilters,
+  minYear,
+  setMinYear,
+  maxYear,
+  setMaxYear,
+  minMileage,
+  setMinMileage,
+  maxMileage,
+  setMaxMileage,
   minPowerCV,
   setMinPowerCV,
   maxPowerCV,
   setMaxPowerCV,
-  resetFilters,
+  savedFilters,
+  onSaveClick,
+  showNameInput,
+  filterName,
+  onFilterNameChange,
+  onSaveConfirm,
+  onSaveCancel,
+  onApplySavedFilter,
+  onDeleteSavedFilter,
+
 }) => {
-  const [brandLogos, setBrandLogos] = useState({});
-  const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
-  const fallbackLogo = 'https://placehold.co/30x30'; // A working placeholder URL
-
-  // Fetch and cache logos
-  useEffect(() => {
-    const fetchAndCacheLogos = async () => {
-      const cachedLogos = JSON.parse(localStorage.getItem('brandLogos')) || {};
-
-      // Check if logos are already cached
-      if (Object.keys(cachedLogos).length > 0) {
-        setBrandLogos(cachedLogos);
-        return;
-      }
-
-      // Fetch logos from the backend API
-      try {
-        const response = await fetch('http://localhost:8001/brand-logos');
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        const logos = data.reduce((acc, brand) => {
-          acc[brand.brand_name] = brand.logo_url;
-          return acc;
-        }, {});
-
-        // Cache logos in localStorage
-        localStorage.setItem('brandLogos', JSON.stringify(logos));
-        setBrandLogos(logos);
-      } catch (error) {
-        console.error('Error fetching brand logos:', error);
-      }
-    };
-
-    fetchAndCacheLogos();
-  }, [brands]);
-
-  // Handle brand selection
-  const handleBrandSelect = (brand) => {
-    setSelectedBrand(brand);
-    setIsBrandModalOpen(false); // Close the modal after selection
-  };
-
   return (
-    <div className='min-w-60 md:w-48 lg:w-60'>
-      {/* Filter Toggle and Reset Button */}
-      <div className='flex justify-between items-center'>
-        <p
-          onClick={() => setShowFilter(!showFilter)}
-          className='my-2 text-x1 flex items-center cursor-pointer gap-2'
-        >
-          FILTERS
-          <img
-            className={`h-3 sm:hidden ${showFilter ? 'rotate-90' : ''}`}
-            src={assets.dropdown_icon}
-            alt=''
-          />
-        </p>
-        {/* RESET BUTTON (CROSS ICON) */}
-        <button
-          className='p-2 hover:bg-gray-100 rounded-full transition-all duration-300'
-          onClick={resetFilters}
-        >
-          <img src={assets.cross_icon} alt='Reset Filters' className='w-4 h-4' />
-        </button>
-      </div>
+<div className={`min-w-60 md:w-48 lg:w-72 ${showFilter ? 'block' : 'hidden'} sm:block`}>
+<div className="hidden sm:flex justify-between items-center gap-2 p-2">
+<p className='my-2 text-xl font-semibold'>FILTERS</p>
+<div className="flex gap-2">
+  <button 
+    className="p-2 hover:bg-gray-100 rounded-full"
+    onClick={onSaveClick}
+  >
+    <img src={assets.save} alt='Save' className='w-4 h-4' />
+  </button>
+  <button 
+    className="p-2 hover:bg-gray-100 rounded-full" 
+    onClick={resetFilters}
+  >
+    <img src={assets.cross_icon} alt='Reset' className='w-4 h-4' />
+  </button>
+  </div>
+</div>
 
-      {/* Select Brand Button */}
-      <div className={`border border-gray-300 px-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
-        <p className='mb-3 text-sm font-medium'>BRAND</p>
-        <button
-          className='w-full p-2 border border-gray-300 rounded text-left'
-          onClick={() => setIsBrandModalOpen(true)}
-        >
-          {selectedBrand || 'Select Brand'}
-        </button>
-      </div>
+{/* Saved Filters Section */}
+      <div className="mb-4">
+        
+        {savedFilters.length > 0 && (
+          <>
+            <h3 className="font-semibold mb-2">Saved Filters</h3>
+            <div className="space-y-2">
+            {savedFilters.map((preset) => (
+              <div key={preset._id} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                <button 
+                  className="text-sm hover:underline flex-1 text-left"
+                  onClick={() => onApplySavedFilter(preset)}
+                >
+                  {preset.name}
+                </button>
+                <button
+                  className="ml-2 text-red-500 hover:text-red-700"
+                  onClick={() => onDeleteSavedFilter(preset._id)}
+                  title="Delete filter"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
 
-      {/* Brand Selection Modal */}
-      {isBrandModalOpen && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'>
-          <div className='bg-white p-6 rounded-lg w-11/12 max-w-4xl max-h-[80vh] overflow-y-auto'>
-            <div className='flex justify-between items-center mb-4'>
-              <h2 className='text-xl font-semibold'>Select Brand</h2>
+            </div>
+          </>
+        )}
+
+        {/* Name Input */}
+        {showNameInput && (
+          <div className="mt-4 space-y-2">
+            <input
+              type="text"
+              value={filterName}
+              onChange={(e) => onFilterNameChange(e.target.value)}
+              placeholder="Name your filter"
+              className="w-full p-2 border rounded text-sm"
+              autoFocus
+              onKeyPress={(e) => e.key === 'Enter' && onSaveConfirm()}
+            />
+            <div className="flex gap-2">
               <button
-                onClick={() => setIsBrandModalOpen(false)}
-                className='p-2 hover:bg-gray-100 rounded-full'
+                onClick={onSaveConfirm}
+                className="flex-1 text-sm bg-violet-500 text-white px-2 py-1 rounded"
               >
-                <img src={assets.cross_icon} alt='Close' className='w-4 h-4' />
+                Save
+              </button>
+              <button
+                onClick={onSaveCancel}
+                className="flex-1 text-sm bg-gray-200 px-2 py-1 rounded"
+              >
+                Cancel
               </button>
             </div>
-            <div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4'>
-              {brands.map((brand, index) => (
-                <div
-                  key={index}
-                  className={`p-4 border ${
-                    selectedBrand === brand ? 'border-blue-500' : 'border-gray-300'
-                  } rounded-lg cursor-pointer hover:bg-gray-100`}
-                  onClick={() => handleBrandSelect(brand)}
-                >
-                  <img
-                    src={brandLogos[brand] || fallbackLogo} // Use the fallback logo if not available
-                    alt={brand}
-                    className='w-16 h-16 mx-auto mb-2'
-                  />
-                  <p className='text-center text-sm'>{brand}</p>
-                </div>
-              ))}
-            </div>
           </div>
-        </div>
-      )}
-
-      {/* Other Filters (Model, Price Range, Power CV Range) */}
-      <div className={`border border-gray-300 px-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
-        <p className='mb-3 text-sm font-medium'>MODEL</p>
-        <select
-          className='w-full p-2 border border-gray-300 rounded'
-          value={selectedModel}
-          onChange={(e) => setSelectedModel(e.target.value)}
-        >
-          <option value=''>All Models</option>
-          {models.map((model, index) => (
-            <option key={index} value={model}>
-              {model}
-            </option>
-          ))}
-        </select>
+        )}
       </div>
+      {/* Filter Components */}
+      <BrandFilter
+         brands={brands}
+         selectedBrands={selectedBrands}
+         setSelectedBrands={setSelectedBrands}
+      />
+      <ModelFilter
+        models={models}
+        selectedModel={selectedModel}
+        setSelectedModel={setSelectedModel}
+      />
+      <TransmissionFilter
+        selectedTransmissions={selectedTransmissions}
+        handleTransmissionSelect={handleTransmissionSelect}
+      />
+      <FuelFilter
+        selectedFuelTypes={selectedFuelTypes}
+        handleFuelSelect={handleFuelSelect}
+      />
+      <PriceRangeFilter
+        minPrice={minPrice}
+        setMinPrice={setMinPrice}
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+      />
+            <YearFilter
+        minYear={minYear}
+        setMinYear={setMinYear}
+        maxYear={maxYear}
+        setMaxYear={setMaxYear}
+      />
+       <PowerCVFilter
+        minPowerCV={minPowerCV}
+        setMinPowerCV={setMinPowerCV}
+        maxPowerCV={maxPowerCV}
+        setMaxPowerCV={setMaxPowerCV}
+      />
+      
+      <MileageFilter
+        minMileage={minMileage}
+        setMinMileage={setMinMileage}
+        maxMileage={maxMileage}
+        setMaxMileage={setMaxMileage}
+      />
 
-      <div className={`border border-gray-300 px-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
-        <p className='mb-3 text-sm font-medium'>PRICE RANGE</p>
-        <div className='flex gap-2'>
-          <input
-            type='number'
-            placeholder='Min Price'
-            className='w-1/2 p-2 border border-gray-300 rounded'
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-          />
-          <input
-            type='number'
-            placeholder='Max Price'
-            className='w-1/2 p-2 border border-gray-300 rounded'
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className={`border border-gray-300 px-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
-        <p className='mb-3 text-sm font-medium'>POWER CV RANGE</p>
-        <div className='flex gap-2'>
-          <input
-            type='number'
-            placeholder='Min Power CV'
-            className='w-1/2 p-2 border border-gray-300 rounded'
-            value={minPowerCV}
-            onChange={(e) => setMinPowerCV(e.target.value)}
-          />
-          <input
-            type='number'
-            placeholder='Max Power CV'
-            className='w-1/2 p-2 border border-gray-300 rounded'
-            value={maxPowerCV}
-            onChange={(e) => setMaxPowerCV(e.target.value)}
-          />
-        </div>
-      </div>
     </div>
   );
 };
