@@ -8,7 +8,7 @@ cron.schedule('0 1 * * *', async () => {
     try {
         
         console.log('Running POST request to scrapy-api:');
-        const response = await axios.post('http://scrapy-api:8002/scrape', {}, {
+        const response = await axios.post('http://scrapy:8002/scrape', {}, {
             timeout: 30000, 
         });
         console.log('POST request successful:', response.data);

@@ -15,7 +15,6 @@ export const LoginForm = ({ onToggleForm }) => {
         // Use sessionStorage for temporary sessions
         const storage = rememberMe ? localStorage : sessionStorage;
         storage.setItem("token", data.token);
-        storage.setItem("username", data.username);
         navigate("/");
       }
     } catch (err) {

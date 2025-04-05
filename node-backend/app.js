@@ -8,6 +8,10 @@ const authMiddleware = require("./middleware/authMiddleware");
 const userActionsRoutes = require('./routes/userActions');
 const favoriteRoutes = require('./routes/favorites');
 const filterPresetRoutes = require('./routes/filterPresets');
+const recommendationRoutes = require('./routes/recommendation');
+
+
+
 
 
 require("dotenv").config();
@@ -40,6 +44,8 @@ app.use("/api/auth", authRoutes);
 app.use('/api/user-actions', userActionsRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/filter-presets', filterPresetRoutes);
+app.use('/api/recommend', recommendationRoutes);
+
 
 
 

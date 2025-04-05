@@ -20,9 +20,13 @@ import cross_icon from './cross_icon.png'
 import save from './save.png'
 import history from './history.png'
 import heart from './heart.png'
+import grid_icon from './grid_icon.png'
+import list_icon from './list_icon.png'
 
 export const assets = {
     logo,
+    grid_icon,
+    list_icon,
     // hero_img,
     // cart_icon,
     dropdown_icon,

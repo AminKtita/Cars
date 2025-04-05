@@ -5,14 +5,18 @@ import { CarContext } from '../context/CarContext';
 import { FilterSection } from '../components/FilterSection';
 import { SortSection } from '../components/SortSection';
 import { CarGrid } from '../components/CarGrid';
+import { CarListView } from '../components/CarListView';
 import { Pagination } from '../components/Pagination';
 import { logUserAction ,getFilterPresets,saveFilterPreset,deleteFilterPreset} from '../services/api';
 import { useSearchParams } from 'react-router-dom';
 import { assets } from '../assets/assets';
+import { ViewSelector } from '../components/ViewSelector';
 
 
 
 export const CarList = () => {
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -87,7 +91,6 @@ useEffect(() => {
   };
   loadPresets();
 }, []);
-
   const applySavedFilter = (preset) => {
     setSelectedBrands(preset.filters.selectedBrands);
     setSelectedModel(preset.filters.selectedModel);
@@ -152,7 +155,7 @@ const deleteSavedFilter = async (presetId) => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
   const totalPages = Math.ceil(filterProducts.length / itemsPerPage);
   
   // Debounced filter logging
@@ -444,12 +447,19 @@ const deleteSavedFilter = async (presetId) => {
 
       {/* Main Content */}
       <div className='flex-1'>
-        <div className='flex justify-between text-base sm:text-2xl mb-4'>
+        <div className='flex justify-between items-center text-base sm:text-2xl'>
           <Title text1={'ALL'} text2={'CARS'} />
+          <div className='sm:flex items-center gap-4 space-y-2'>
+          <ViewSelector viewMode={viewMode} setViewMode={setViewMode} />
           <SortSection sortBy={sortBy} setSortBy={setSortBy} />
         </div>
+        </div>
 
+        {viewMode === 'grid' ? (
         <CarGrid filterProducts={filterProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} />
+      ) : (
+        <CarListView filterProducts={filterProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} />
+      )}
 
         <Pagination
           currentPage={currentPage}

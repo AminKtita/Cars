@@ -28,7 +28,17 @@ export const RecentlyAdded = () => {
     return <div>Error: {error}</div>;
   }
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="flex flex-col items-center justify-center gap-2 min-h-[200px]">
+    {/* Spinner */}
+    <div
+      className="w-12 h-12 rounded-full animate-spin
+      border-2 border-solid border-current border-t-transparent"
+      role="status"
+      aria-label="loading"
+    >
+      <span className="sr-only">Loading...</span>
+    </div>
+  </div>;
   }
 
   return (

@@ -3,7 +3,7 @@ import { CarItem } from './CarItem';
 
 export const CarGrid = ({ filterProducts }) => {
   return (
-    <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6'>
+   <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6'>
       {filterProducts.map((item) => (
         <CarItem
           key={item._id}

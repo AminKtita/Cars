@@ -1,17 +1,21 @@
-# Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file into the container
-COPY requirements.txt .
+# Install system dependencies for Scrapy and other packages
+RUN apt-get update && \
+    apt-get install -y libxml2-dev libxslt1-dev zlib1g-dev gcc && \
+    apt-get clean
 
-# Install Python dependencies
+# Copy requirements first for better layer caching
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container
+# Copy both Scrapy project and API code
 COPY . .
 
-# Expose a port for the API (optional, since we'll use the backend service)
-EXPOSE 8001
+# Expose API port
+EXPOSE 8002
+
+# Start the FastAPI application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8002"]

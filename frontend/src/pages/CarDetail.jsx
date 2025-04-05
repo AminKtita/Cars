@@ -143,6 +143,7 @@ export const CarDetail = () => {
        <button 
         onClick={() => navigate(-1)}
         className="fixed top-4 left-4 bg-white p-2 rounded-full shadow-lg hover:shadow-xl transition-shadow"
+        title='Go back'
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

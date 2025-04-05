@@ -40,4 +40,14 @@ router.get('/check/:carId', authMiddleware, async (req, res) => {
   }
 });
 
+
+router.get('/', authMiddleware, async (req, res) => {
+  try {
+    const fav = await Favorite.find({ user: req.userId }).sort({ createdAt: -1 });
+    res.json(fav);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

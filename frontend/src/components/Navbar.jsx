@@ -2,7 +2,9 @@ import React, { useContext, useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { assets } from '../assets/assets';
 import { CarContext } from '../context/CarContext';
-import { isTokenExpired ,login} from '../services/api'; 
+import { isTokenExpired } from '../services/api'; 
+import { jwtDecode } from "jwt-decode";
+
 
 export const Navbar = () => {
   const [visible, setVisible] = useState(false); 
@@ -16,7 +18,17 @@ export const Navbar = () => {
   const isLoggedIn = token ? !isTokenExpired(token) : false;
   
   // Updated username retrieval
-  const username = localStorage.getItem('username') || sessionStorage.getItem('username') || 'User';
+  let username = 'User';
+  if (isLoggedIn && token) {
+    try {
+      const decoded = jwtDecode(token);
+      username = decoded.username || 'User';
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      handleLogout(); // Logout if token is invalid
+    }
+  }
+
   const handleLogin = () => {
     navigate('/login');
   };
@@ -91,12 +103,15 @@ export const Navbar = () => {
           onClick={() => setShowSearch(true)}
           src={assets.search_icon}
           className='w-5 cursor-pointer'
-          alt=''
-        />
+          title="Search"
+          alt='Search'
+          />
         <div
           ref={dropdownRef}
           className='relative flex items-center gap-2 cursor-pointer'
           onClick={() => setShowDropdown(!showDropdown)}
+          title="Profil"
+
         >
           <img src={assets.profile_icon} className='w-6' alt='' />
           <p className='text-sm'>{isLoggedIn ? username : 'Login'}</p>
@@ -111,19 +126,26 @@ export const Navbar = () => {
             <div className='absolute top-8 right-0 bg-white shadow-lg rounded-lg w-48 z-50'>
               <div className='p-4 space-y-3'>
                 {/* Menu Items */}
-                <div className='flex items-center gap-2'>
-                  <img src={assets.save} className='w-4' alt='' />
-                  <p className='text-sm font-medium'>Saved Searches</p>
-                </div>
-                <div className='flex items-center gap-2'>
-                  <img src={assets.history} className='w-4' alt='' />
-                  <p className='text-sm font-medium'>Last Searches</p>
-                </div>
+                <button onClick={() => navigate('/favorites')}>
                 <div className='flex items-center gap-2'>
                   <img src={assets.heart} className='w-4' alt='' />
                   <p className='text-sm font-medium'>Favorite Cars</p>
                 </div>
+                </button>
 
+                <button onClick={() => navigate('/filters')}>
+                <div className='flex items-center gap-2'>
+                  <img src={assets.save} className='w-4' alt='' />
+                  <p className='text-sm font-medium'>Saved Filters</p>
+                </div>
+                </button>
+
+                <button onClick={() => navigate('/history')}>
+                <div className='flex items-center gap-2'>
+                  <img src={assets.history} className='w-4' alt='' />
+                  <p className='text-sm font-medium'>Last Viewed</p>
+                </div>
+                </button>
                 {/* Log In/Out Button */}
                 <button
                   onClick={isLoggedIn ? handleLogout : handleLogin}
@@ -161,6 +183,9 @@ export const Navbar = () => {
           {/* Menu Links */}
           <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border'>
             HOME
+          </NavLink>
+          <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to={`/cars`}>
+            BUY
           </NavLink>
           <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border'>
             ABOUT

@@ -8,6 +8,9 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { isTokenExpired } from './services/api';
+import { FavoritesPage } from './pages/FavoritesPage'
+import { HistoryPage } from './pages/HistoryPage'
+import { SavedFiltersPage } from './pages/SavedFiltersPage'
 
 
 const useAuthCheck = () => {
@@ -50,6 +53,25 @@ export const App = () => {
             <CarDetail />
           </ProtectedRoute>
         }/>
+
+      <Route path="/favorites" element={
+         <ProtectedRoute>
+          <FavoritesPage />
+         </ProtectedRoute>
+        } />
+
+      <Route path="/history" element={
+         <ProtectedRoute>
+          <HistoryPage />
+         </ProtectedRoute>
+        } />
+      <Route path="/filters" element={
+         <ProtectedRoute>
+          <SavedFiltersPage />
+         </ProtectedRoute>
+        } />
+
+          
       </Routes>
     </div>
   )

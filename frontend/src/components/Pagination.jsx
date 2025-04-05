@@ -34,7 +34,7 @@ export const Pagination = ({
           onChange={onItemsPerPageChange}
           className='p-1 md:p-2 text-sm md:text-base border border-gray-300 rounded'
         >
-          {[10, 20, 30, 50].map((size) => (
+          {[12, 24, 36, 48].map((size) => (
             <option key={size} value={size}>{size}</option>
           ))}
         </select>

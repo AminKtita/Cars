@@ -58,12 +58,15 @@ export const FilterSection = ({
   <button 
     className="p-2 hover:bg-gray-100 rounded-full"
     onClick={onSaveClick}
+    title="Save filter"
   >
     <img src={assets.save} alt='Save' className='w-4 h-4' />
   </button>
   <button 
     className="p-2 hover:bg-gray-100 rounded-full" 
     onClick={resetFilters}
+    title="Reset filter"
+
   >
     <img src={assets.cross_icon} alt='Reset' className='w-4 h-4' />
   </button>
