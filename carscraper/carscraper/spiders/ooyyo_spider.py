@@ -84,6 +84,8 @@
 import scrapy
 import json
 from urllib.parse import urljoin, quote
+from carscraper.items import CarItem
+
 
 class OoyyoSpider(scrapy.Spider):
     name = "ooyyo"
@@ -127,7 +129,7 @@ class OoyyoSpider(scrapy.Spider):
         # Build the final API URL
         api_url = f"https://analytics.ooyyo.com/ooyyo-services/resources/cars/outlets?json={encoded_json}"
         self.logger.info(f"Constructed API URL: {api_url}")
-        yield scrapy.Request(url=api_url, callback=self.parse_api)
+        yield scrapy.Request(url=api_url,meta={'link': response.url},callback=self.parse_api)
 
     def parse_api(self, response):
         try:
@@ -149,22 +151,25 @@ class OoyyoSpider(scrapy.Spider):
                 return
             
             img_url = car_data.get('imgUrl', {})
-            yield {
-                'vehicle_title': car_data.get('url', {}).get('title', 'N/A'),
-                'price': car_data.get('itemDisplayPrice', 'N/A'),
-                'car_ref_id': car_data.get('idRecord', 'N/A'),
-                'power_cv': car_data.get('displayPower', 'N/A'),
-                'mileage': car_data.get('mileage', 'N/A'),
-                'power_cv_fiscal': car_data.get('makemake', 'N/A'),
-                'number_of_cylinder': car_data.get('makemake', 'N/A'),
-                'year': car_data.get('year', 'N/A'),
-                'fuel_type': car_data.get('fueltype', 'N/A'),
-                'gearbox_type': car_data.get('transmission', 'N/A'),
-                'model_name': car_data.get('model', 'N/A'),
-                'brand_name': car_data.get('make', 'N/A'),
-                'color': car_data.get('color', 'N/A'),
-                'country': car_data.get('country', 'N/A'),
-                'images': [img_url.get('lg', 'N/A')] if img_url else ['N/A']
-            }
+            car_item= CarItem()
+            car_item['url'] = response.meta.get('link', 'N/A'),
+            car_item['vehicle_title'] = car_data.get('url', {}).get('title', 'N/A'),
+            car_item['price'] = car_data.get('itemDisplayPrice', 'N/A'),
+            car_item['car_ref_id'] = car_data.get('idRecord', 'N/A'),
+            car_item['power_cv'] = car_data.get('displayPower', 'N/A'),
+            car_item['mileage'] = car_data.get('mileage', 'N/A'),
+            car_item['power_cv_fiscal'] = car_data.get('makemake', 'N/A'),
+            car_item['number_of_cylinder'] = car_data.get('makemake', 'N/A'),
+            car_item['year'] = car_data.get('year', 'N/A'),
+            car_item['fuel_type'] = car_data.get('fueltype', 'N/A'),
+            car_item['gearbox_type'] = car_data.get('transmission', 'N/A'),
+            car_item['model_name'] = car_data.get('model', 'N/A'),
+            car_item['brand_name'] = car_data.get('make', 'N/A'),
+            car_item['color'] = car_data.get('color', 'N/A'),
+            car_item['country'] = car_data.get('country', 'N/A'),
+            car_item['images'] = [img_url.get('lg', 'N/A')] if img_url else ['N/A']
+
+            yield car_item
+
         except json.JSONDecodeError as e:
             self.logger.error(f"Failed to parse JSON: {e}")

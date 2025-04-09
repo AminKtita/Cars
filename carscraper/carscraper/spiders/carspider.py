@@ -1,5 +1,6 @@
 import scrapy
 import json
+from carscraper.items import CarItem
 
 class CarspiderSpider(scrapy.Spider):
     name = "carspider"
@@ -39,21 +40,25 @@ class CarspiderSpider(scrapy.Spider):
         if data.get('success'):
             ad = data.get('data', {}).get('item', {})
             owner_vehicle = ad.get('owner_vehicle', {})
+            slug = ad.get("slug")
+            url= f'https://cartobike.com/en/public-ads/{slug}?lang=en'
+            car_item= CarItem()
 
-            yield {
-                'vehicle_title': owner_vehicle.get('full_title'),
-                'price': ad.get('total_price'),
-                'car_ref_id': ad.get('id'),
-                'power_cv': owner_vehicle.get('power_cv'),
-                'mileage': owner_vehicle.get('vehicle_mileage'),
-                'power_cv_fiscal': owner_vehicle.get('power_cv_fiscal'),
-                'number_of_cylinder': owner_vehicle.get('number_of_cylinder'),
-                'year': owner_vehicle.get('vehicle_first_register_year'),
-                'fuel_type': owner_vehicle.get('fuel', {}).get('name', 'N/A'),
-                'gearbox_type': owner_vehicle.get('gearbox', {}).get('name', 'N/A'),
-                'model_name': owner_vehicle.get('model', {}).get('model_name', 'N/A'),
-                'brand_name': owner_vehicle.get('model', {}).get('brand_car', {}).get('name', 'N/A'),
-                'color': owner_vehicle.get('outside_color', {}).get('name', 'N/A') if owner_vehicle.get('outside_color') else 'N/A',
-                'country': ad.get('user_data', {}).get('limited_address', {}).get('country', 'N/A'),
-                'images': [media.get('original_url', 'N/A') for media in owner_vehicle.get('media', [])] if owner_vehicle else ['N/A']
-            }
+            car_item['url'] = url,
+            car_item['vehicle_title'] = owner_vehicle.get('full_title'),
+            car_item['price'] = ad.get('total_price'),
+            car_item['car_ref_id'] = ad.get('id'),
+            car_item['power_cv'] = owner_vehicle.get('power_cv'),
+            car_item['mileage'] = owner_vehicle.get('vehicle_mileage'),
+            car_item['power_cv_fiscal'] = owner_vehicle.get('power_cv_fiscal'),
+            car_item['number_of_cylinder'] = owner_vehicle.get('number_of_cylinder'),
+            car_item['year'] = owner_vehicle.get('vehicle_first_register_year'),
+            car_item['fuel_type'] = owner_vehicle.get('fuel', {}).get('name', 'N/A'),
+            car_item['gearbox_type'] = owner_vehicle.get('gearbox', {}).get('name', 'N/A'),
+            car_item['model_name'] = owner_vehicle.get('model', {}).get('model_name', 'N/A'),
+            car_item['brand_name'] = owner_vehicle.get('model', {}).get('brand_car', {}).get('name', 'N/A'),
+            car_item['color'] = owner_vehicle.get('outside_color', {}).get('name', 'N/A') if owner_vehicle.get('outside_color') else 'N/A',
+            car_item['country'] = ad.get('user_data', {}).get('limited_address', {}).get('country', 'N/A'),
+            car_item['images'] = [media.get('original_url', 'N/A') for media in owner_vehicle.get('media', [])] if owner_vehicle else ['N/A']
+
+            yield car_item

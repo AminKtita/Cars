@@ -124,3 +124,12 @@ MONGO_DATABASE = 'scraped_data'
 # Set settings whose default value is deprecated to a future-proof value
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+PROXY_USER = 'yiothacn-rotate'
+PROXY_PASSWORD = 'qcpg3yfkm2zj'
+PROXY_ENDPOINT = 'p.webshare.io'
+PROXY_PORT = '80'
+
+DOWNLOADER_MIDDLEWARES = { 
+    'carscraper.middlewares.MyProxyMiddleware': 350, 
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 400, 
+}

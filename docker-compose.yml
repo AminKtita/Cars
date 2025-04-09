@@ -20,33 +20,10 @@ services:
       - "8002:8002"
     volumes:
       - ./carscraper:/app
-      - /app/.scrapy  # For persistent Scrapy job data
+      - /app/.scrapy 
     environment:
       MONGO_URI: "mongodb://mongo:27017"
       MONGO_DATABASE: "scrapy_data"
-
-  # backend:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   container_name: backend
-  #   depends_on:
-  #     - mongo
-  #   ports:
-  #     - "8000:8000"
-  #   environment:
-  #     MONGO_URI: "mongodb://mongo:27017"
-  #     MONGO_DATABASE: "scrapy_data"
-
-  # scrapy-api:
-  #   image: cars-scrapy_api
-  #   container_name: scrapy_api
-  #   restart: always
-  #   ports:
-  #     - "8002:8002"
-  #   depends_on:
-  #     - mongo
-  #   command: uvicorn main:app --host 0.0.0.0 --port 8002
 
   frontend:
     build:
@@ -104,7 +81,3 @@ services:
 
 volumes:
   mongo_data:
-
-# networks:
-#   app-network:
-#     driver: bridge
