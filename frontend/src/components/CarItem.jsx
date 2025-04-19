@@ -1,21 +1,21 @@
-import React, { useContext, useState ,useEffect} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CarContext } from '../context/CarContext';
-import { LoginPromptModal } from '../Modals/Modal'; // Import the LoginPromptModal
-import { isTokenExpired ,checkFavorite} from '../services/api';
+import { LoginPromptModal } from '../Modals/Modal';
+import { isTokenExpired, checkFavorite } from '../services/api';
+import { assets } from '../assets/assets';
 
-export const CarItem = ({ id, image, name, price, brand, model ,year, mileage}) => {
-  const {currency } = useContext(CarContext);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false); 
+export const CarItem = ({ id, image, name, price, brand, model, year, mileage, fuel, gearbox }) => {
+  const { currency } = useContext(CarContext);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  
-  const navigate = useNavigate(); 
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    // Check both storage locations
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     const isLoggedIn = token ? !isTokenExpired(token) : false;
-  
+
     if (isLoggedIn) {
       navigate(`/car/${id}`);
     } else {
@@ -23,71 +23,147 @@ export const CarItem = ({ id, image, name, price, brand, model ,year, mileage}) 
     }
   };
 
-    useEffect(() => {
-      const checkFavoriteStatus = async () => {
-        try {
-          const { isFavorite } = await checkFavorite(id);
-          setIsFavorite(isFavorite);
-        } catch (err) {
-          console.error('Error checking favorite:', err);
-        }
-      };
-      
-      checkFavoriteStatus();
-    }, [id]);
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      try {
+        const { isFavorite } = await checkFavorite(id);
+        setIsFavorite(isFavorite);
+      } catch (err) {
+        console.error('Error checking favorite:', err);
+      }
+    };
+    checkFavoriteStatus();
+  }, [id]);
 
-    
   return (
-    <>
-      {/* Car Item Container */}
-      <div className='text-gray-700 cursor-pointer' onClick={handleClick}>
-        <div className='overflow-hidden'>
-          {/* Image Container */}
-          <div className='w-full h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-lg relative group'>
-            {/* Image */}
-            <img
-              className='w-full h-full object-cover hover:scale-110 transition-transform duration-300 ease-in-out'
-              src={image[0]} // Use the first image in the array
-              alt={name}
-            />
-          {/* Top Overlay with flex container */}
-              <div className='absolute top-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 flex justify-between items-center'>
-              <div>
-                <p className='text-sm font-medium'>{brand}</p>
-                <p className='text-xs'>{model}</p>
+<div className="group relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+      <div className="cursor-pointer" onClick={handleClick}>
+        {/* Image Gallery */}
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <div className="relative h-full w-full">
+            {/* Show available images (1-3) */}
+            {image.slice(0, 3).map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                alt={name}
+                className={`absolute inset-0 w-full h-full object-cover ${
+                  image.length > 1 ? 'transition-opacity duration-300' : ''
+                } ${
+                  activeImageIndex === index ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            ))}
+            
+            {/* Overlay for third image only if more than 3 images exist */}
+            {image.length > 3 && activeImageIndex === 2 && (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <div className="flex items-center text-white">
+                  <img src={assets.camera} className="w-5 h-5 mr-2" alt="camera" />
+                  <span>+{image.length - 3} more</span>
+                </div>
               </div>
-              
-              {/* Favorite */}
-              <div className="p-1 hover:bg-white/10 rounded-full transition-colors">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-300 fill-transparent'}`}
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
-              </div>
+            )}
+          </div>
+
+          {/* Top Badges */}
+          <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
+            <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm flex items-center">
+              <img src={assets.camera} className="w-4 h-4 mr-1" alt="photos" />
+              <span>{image.length}</span>
             </div>
-            {/* Price Overlay (Center Bottom) */}
-            <div className='absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-full shadow-lg'>
-              <p className='text-sm font-medium'>{currency} {price}</p>
+
+            <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm flex items-center">
+              <img src={assets.year} className="w-4 h-4 mr-1" alt="photos" />
+              <span>{year}</span>
             </div>
           </div>
-          {/* Car Details */}
-          <p className='pt-3 pb-1 text-sm font-medium'>{name}</p>
+
+          {/* Navigation bullets only if multiple images */}
+          {image.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              {image.slice(0, 3).map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-8 h-1 rounded-full cursor-pointer transition-colors ${
+                    activeImageIndex === index ? 'bg-red-600' : 'bg-white/50'
+                  }`}
+                  onMouseEnter={() => setActiveImageIndex(index)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+
+        {/* Content Section */}
+        <div className="p-4">
+          <div className="mb-3">
+          <span className="sub-title text-red-700">{brand}</span>
+            <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">{name}</h3>
+            <p className="text-2xl font-bold text-red-700 mt-1">
+              {currency} {price.toLocaleString()}
+            </p>
+          </div>
+
+          {/* Specifications */}
+          <div className="grid grid-cols-3 gap-4 text-sm border-t pt-4">
+            <div className="flex items-center">
+              <img src={assets.fuel} className="w-5 h-5 mr-2" alt="fuel" />
+              <div>
+                <p className="text-gray-500">Fuel</p>
+                <p className="font-medium capitalize">{fuel}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <img src={assets.speedometer} className="w-5 h-5 mr-2" alt="mileage" />
+              <div>
+                <p className="text-gray-500">Mileage</p>
+                <p className="font-medium">{mileage}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center">
+              <img src={assets.gearbox} className="w-5 h-5 mr-2" alt="transmission" />
+              <div>
+                <p className="text-gray-500">Gearbox</p>
+                <p className="font-medium capitalize">{gearbox}</p>
+              </div>
+            </div>
+          </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-between items-center mt-6 border-t pt-4">
+            <div className="flex items-center text-red-700 hover:text-amber-700 font-medium">
+              View Details
+              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </div>
+            
+            {/* Favorite Button */}
+            <button 
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <svg
+                className={`w-6 h-6 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-600 fill-transparent'}`}
+                stroke="currentColor"
+                strokeWidth="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Login Prompt Modal */}
-      {showLoginPrompt && (
-        <LoginPromptModal onClose={() => setShowLoginPrompt(false)} />
-      )}
-    </>
+      {showLoginPrompt && <LoginPromptModal onClose={() => setShowLoginPrompt(false)} />}
+    </div>
   );
 };

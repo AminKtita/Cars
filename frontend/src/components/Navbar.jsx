@@ -71,7 +71,7 @@ export const Navbar = () => {
   }, []);
 
   return (
-    <div className='flex items-center justify-between py-5 font-medium relative'>
+    <div className='flex items-center justify-between py-5 font-medium relative px-4 sm:px-4 md:px-6 lg:px-8'>
       {/* Logo */}
       <NavLink className='flex flex-col items-center gap-l' to={`/`}>
         <img src={assets.logo} className='w-36' alt='' />

@@ -42,7 +42,7 @@ export const RecentlyAdded = () => {
   }
 
   return (
-    <div className='my-10'>
+    <div className='mt-10 px-4 sm:px-4 md:px-6 lg:px-8'>
       <div className='text-center py-8 text-3xl'>
         <Title text1={'Recently'} text2={'Added'} />
       </div>
@@ -56,6 +56,10 @@ export const RecentlyAdded = () => {
             image={item.images}
             brand={item.brand_name}
             model={item.model_name}
+            fuel={item.fuel_type}
+            year={item.year}
+            mileage={item.mileage}
+            gearbox={item.gearbox_type}
           />
         ))}
       </div>

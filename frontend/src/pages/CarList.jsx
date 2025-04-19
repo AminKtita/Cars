@@ -15,7 +15,7 @@ import { ViewSelector } from '../components/ViewSelector';
 
 
 export const CarList = () => {
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('grid'); 
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [cars, setCars] = useState([]);
@@ -23,6 +23,8 @@ export const CarList = () => {
   const [error, setError] = useState(null);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
+  const [bodyTypes, setbodyTypes] = useState([]);
+  const [selectedbodyTypes, setSelectedbodyTypes] = useState([]);
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
@@ -59,6 +61,7 @@ const handleSaveConfirm = async () => {
       filters: {
         selectedBrands,
         selectedModel,
+        selectedbodyTypes,
         minPrice,
         maxPrice,
         selectedTransmissions,
@@ -93,6 +96,8 @@ useEffect(() => {
 }, []);
   const applySavedFilter = (preset) => {
     setSelectedBrands(preset.filters.selectedBrands);
+    setSelectedbodyTypes(preset.filters.SelectedbodyTypes);
+
     setSelectedModel(preset.filters.selectedModel);
     setMinPrice(preset.filters.minPrice);
     setMaxPrice(preset.filters.maxPrice);
@@ -115,10 +120,13 @@ const deleteSavedFilter = async (presetId) => {
   }
 };
 
+
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
     // Set all filter states from URL params
     setSelectedBrands(params.brand ? params.brand.split(',') : []);
+    setSelectedbodyTypes(params.bodyTypes ? params.bodyTypes.split(',') : []);
+
     setSelectedModel(params.model || '');
     setSelectedTransmissions(params.transmission ? params.transmission.split(',') : []);
     setSelectedFuelTypes(params.fuel ? params.fuel.split(',') : []);
@@ -134,8 +142,10 @@ const deleteSavedFilter = async (presetId) => {
   }, []);
 
   useEffect(() => {
+    
     const params = {
       brand: selectedBrands.join(','),
+      bodyTypes: selectedbodyTypes.join(','),
       model: selectedModel,
       transmission: selectedTransmissions.join(','),
       fuel: selectedFuelTypes.join(','),         
@@ -150,7 +160,7 @@ const deleteSavedFilter = async (presetId) => {
       sortBy:sortBy,
     };
     setSearchParams(params);
-  }, [selectedBrands, selectedModel, selectedFuelTypes, selectedTransmissions, minPrice, maxPrice, minMileage, maxMileage, minYear, maxYear, minPowerCV, maxPowerCV, sortBy]);
+  }, [selectedBrands,selectedbodyTypes, selectedModel, selectedFuelTypes, selectedTransmissions, minPrice, maxPrice, minMileage, maxMileage, minYear, maxYear, minPowerCV, maxPowerCV, sortBy]);
 
 
   // Pagination state
@@ -167,6 +177,7 @@ const deleteSavedFilter = async (presetId) => {
     filterTimeoutRef.current = setTimeout(async () => {
       const hasActiveFilters = 
         selectedBrands || 
+        selectedbodyTypes || 
         selectedModel || 
         minPrice || 
         maxPrice || 
@@ -185,6 +196,7 @@ const deleteSavedFilter = async (presetId) => {
           details: {
             filters: {
               brand: selectedBrands,
+              bodyTypes: selectedbodyTypes,
               model: selectedModel,
               priceRange: [Number(minPrice), Number(maxPrice)],
               powerCV: [Number(minPowerCV), Number(maxPowerCV)],
@@ -210,6 +222,7 @@ const deleteSavedFilter = async (presetId) => {
     };
   }, [
     selectedBrands,
+    selectedbodyTypes,
     selectedModel,
     minPrice,
     maxPrice,
@@ -253,6 +266,9 @@ const deleteSavedFilter = async (presetId) => {
         const uniqueBrands = [...new Set(normalizedData.map((car) => car.brand_name))];
         setBrands(uniqueBrands);
 
+        const uniqueBodyTypes = [...new Set(normalizedData.map((car) => car.body_type))];
+        setbodyTypes(uniqueBodyTypes);
+
         const allModels = [...new Set(normalizedData.map((car) => car.model_name))];
         setModels(allModels);
       } catch (err) {
@@ -271,6 +287,11 @@ const deleteSavedFilter = async (presetId) => {
     if (selectedBrands.length > 0) {
       filteredCars = filteredCars.filter((car) => 
         selectedBrands.includes(car.brand_name)
+      );
+    }
+    if (selectedbodyTypes.length > 0) {
+      filteredCars = filteredCars.filter((car) => 
+        selectedbodyTypes.includes(car.body_type)
       );
     }
     if (selectedModel) {
@@ -335,10 +356,11 @@ const deleteSavedFilter = async (presetId) => {
 
     setFilterProducts(sortedCars);
     setCurrentPage(1);
-  }, [selectedBrands, selectedModel, minPrice, maxPrice, minPowerCV, maxPowerCV, minYear, maxYear, minMileage, maxMileage, selectedTransmissions, selectedFuelTypes, sortBy, search, cars]);
+  }, [selectedBrands,,selectedbodyTypes, selectedModel, minPrice, maxPrice, minPowerCV, maxPowerCV, minYear, maxYear, minMileage, maxMileage, selectedTransmissions, selectedFuelTypes, sortBy, search, cars]);
 
   // Reset all filters
   const resetFilters = () => {
+    setSelectedbodyTypes([]);
     setSelectedBrands([]);
     setSelectedModel('');
     setMinPrice('');
@@ -367,7 +389,7 @@ const deleteSavedFilter = async (presetId) => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-2 border-t space-y-2'>
+    <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-2 border-t space-y-2 px-4 sm:px-4 md:px-6 lg:px-8'>
       <div className='sm:hidden flex justify-between items-center px-2'>
         <div className='flex items-center gap-2'>
           <p 
@@ -425,9 +447,13 @@ const deleteSavedFilter = async (presetId) => {
         showFilter={showFilter}
         setShowFilter={setShowFilter}
         brands={brands}
+        bodyTypes={bodyTypes}
         models={models}
         selectedBrands={selectedBrands}
         setSelectedBrands={setSelectedBrands}
+        selectedbodyTypes={selectedbodyTypes}
+        setSelectedbodyTypes={setSelectedbodyTypes}
+
         selectedModel={selectedModel}
         setSelectedModel={setSelectedModel}
         minPrice={minPrice}

@@ -165,6 +165,7 @@ class OoyyoSpider(scrapy.Spider):
             car_item['gearbox_type'] = car_data.get('transmission', 'N/A'),
             car_item['model_name'] = car_data.get('model', 'N/A'),
             car_item['brand_name'] = car_data.get('make', 'N/A'),
+            car_item['body_type'] = car_data.get('bodytype', 'N/A'),
             car_item['color'] = car_data.get('color', 'N/A'),
             car_item['country'] = car_data.get('country', 'N/A'),
             car_item['images'] = [img_url.get('lg', 'N/A')] if img_url else ['N/A']

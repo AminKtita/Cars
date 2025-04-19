@@ -11,6 +11,8 @@ import { isTokenExpired } from './services/api';
 import { FavoritesPage } from './pages/FavoritesPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { SavedFiltersPage } from './pages/SavedFiltersPage'
+import { FaqPage } from './pages/FaqPage'
+
 
 
 const useAuthCheck = () => {
@@ -37,7 +39,7 @@ export const App = () => {
   useAuthCheck(); // Add the auth check hook here
 
   return (
-    <div className='px-4 sm:px-4 md:px-6 lg:px-8'>
+    <div>
       <Navbar />
       <SearchBar />
       <Routes>
@@ -70,6 +72,7 @@ export const App = () => {
           <SavedFiltersPage />
          </ProtectedRoute>
         } />
+      <Route path='/faq' element={<FaqPage />} />
 
           
       </Routes>

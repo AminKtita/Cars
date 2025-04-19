@@ -10,6 +10,21 @@ BRAND_NORMALIZATION = {
     'bmw': 'BMW',
     'vw': 'Volkswagen',
 }
+BODY_NORMALIZATION = {
+    'SUV/4x4': 'Suv',
+    'Suv/4X4': 'Suv',
+    'Suv': 'Suv',
+    'hatchback': 'Hatchback',
+    'Hatchback': 'Hatchback',
+    'Saloon ': 'Sedan ',
+    'Sedan': 'Sedan',
+    'Estate': 'Wagon ',
+    'Crossover': 'Suv',
+    'Coupé': 'Coupe',
+    'Minibus ': 'Van',
+
+
+}
 
 FUEL_TYPE_NORMALIZATION = {
     'diesel': 'Diesel',
@@ -31,7 +46,7 @@ class MongoDBPipeline:
     def __init__(self, mongo_uri, mongo_db):
         self.mongo_uri = mongo_uri
         self.mongo_db = mongo_db
-        logging.basicConfig(level=logging.INFO)  # Set logging level
+        logging.basicConfig(level=logging.INFO)  
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -115,6 +130,7 @@ class MongoDBPipeline:
         """First convert tuple values to single values"""
         self.convert_tuples_to_values(item)
         self.normalize_brand(item)
+        self.normalize_body_types(item)
         self.normalize_fuel_type(item)
         self.normalize_gearbox(item)
         self.normalize_generic_fields(item)
@@ -135,7 +151,7 @@ class MongoDBPipeline:
             original = item['brand_name'].lower().strip()
             
             # First try direct replacement from normalization map
-            normalized = BRAND_NORMALIZATION.get(original, original)
+            normalized = BODY_NORMALIZATION.get(original, original)
             
             # Handle case for non-mapped brands
             if normalized == original:
@@ -143,6 +159,22 @@ class MongoDBPipeline:
                 normalized = original.replace('-', ' ').title()
                 
             item['brand_name'] = normalized
+
+    def normalize_body_types(self, item):
+        """Normalize body types names with case handling and variant unification"""
+        if 'body_type' in item:
+            original = item['body_type'].lower().strip()
+            
+            # First try direct replacement from normalization map
+            normalized = BRAND_NORMALIZATION.get(original, original)
+            
+            # Handle case for non-mapped brands
+            if normalized == original:
+                # Standardize capitalization and hyphens
+                normalized = original.replace('-', ' ').title()
+                
+            item['body_type'] = normalized
+
 
     def normalize_fuel_type(self, item):
         """Unify fuel type variations"""

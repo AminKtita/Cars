@@ -55,9 +55,9 @@ class CarRecommender:
             
             df = df.copy()
             non_feature_cols = [
-                '_id', 'vehicle_title', 'car_ref_id', 
+                '_id','url', 'vehicle_title', 'car_ref_id', 
                 'model_name', 'country', 'images', 
-                'unique_id', 'source', 'color'
+                'unique_id', 'source', 'color','last_updated'
             ]
             
             # Clean and normalize numeric columns
@@ -76,7 +76,7 @@ class CarRecommender:
                         df[numeric_cols].head(3).to_string())
             
             # One-hot encode categoricals
-            categoricals = ['fuel_type', 'gearbox_type', 'brand_name']
+            categoricals = ['fuel_type', 'gearbox_type', 'brand_name','body_type']
             df = pd.get_dummies(df, columns=categoricals)
             
             # Log categorical encoding

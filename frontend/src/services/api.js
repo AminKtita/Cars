@@ -180,3 +180,27 @@ export const getHistory = async () => {
     throw error;
   }
 };
+
+export const getMostViewedCarIdsByBrand = async (brand) => {
+  try {
+    const response = await axios.get(`${API_URL}/cars/most-viewed-ids/${encodeURIComponent(brand)}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token') || sessionStorage.getItem('token')}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching top viewed car IDs:', error);
+    throw error;
+  }
+};
+
+export const getMostViewedCar = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/cars/most-viewed`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching most viewed car:', error);
+    throw error;
+  }
+};

@@ -7,47 +7,34 @@ import { FuelFilter } from './FiltersComponents/FuelFilter';
 import { YearFilter } from './FiltersComponents/YearFilter';
 import { MileageFilter } from './FiltersComponents/MileageFilter';
 import { PowerCVFilter } from './FiltersComponents/PowerCVFilter';
+import { BodyTypeFilter } from './FiltersComponents/BodyTypeFilter';
+
 import { assets } from '../assets/assets';
 
 export const FilterSection = ({
   showFilter,
-  setShowFilter,
-  brands,
-  models,
-  selectedBrands,
-  setSelectedBrands,
-  selectedModel,
-  setSelectedModel,
-  minPrice,
-  setMinPrice,
-  maxPrice,
-  setMaxPrice,
-  selectedTransmissions,
-  handleTransmissionSelect,
-  selectedFuelTypes,
-  handleFuelSelect,
   resetFilters,
-  minYear,
-  setMinYear,
-  maxYear,
-  setMaxYear,
-  minMileage,
-  setMinMileage,
-  maxMileage,
-  setMaxMileage,
-  minPowerCV,
-  setMinPowerCV,
-  maxPowerCV,
-  setMaxPowerCV,
-  savedFilters,
-  onSaveClick,
-  showNameInput,
-  filterName,
+  setShowFilter,
+
+  bodyTypes,selectedbodyTypes,setSelectedbodyTypes,
+  brands,selectedBrands,setSelectedBrands,
+  models,selectedModel, setSelectedModel,
+  minPrice,setMinPrice,
+  maxPrice,setMaxPrice,
+  selectedTransmissions,handleTransmissionSelect,
+  selectedFuelTypes, handleFuelSelect,
+  minYear,setMinYear,
+  maxYear,setMaxYear,
+  minMileage,setMinMileage,
+  maxMileage,setMaxMileage,
+  minPowerCV,setMinPowerCV,
+  maxPowerCV,setMaxPowerCV,
+  savedFilters,onSaveClick,
+  showNameInput,filterName, 
   onFilterNameChange,
-  onSaveConfirm,
-  onSaveCancel,
-  onApplySavedFilter,
-  onDeleteSavedFilter,
+  onSaveConfirm,onSaveCancel, 
+  onApplySavedFilter,onDeleteSavedFilter,
+  
 
 }) => {
   return (
@@ -132,6 +119,11 @@ export const FilterSection = ({
         )}
       </div>
       {/* Filter Components */}
+      <BodyTypeFilter
+         bodyTypes={bodyTypes}
+         selectedbodyTypes={selectedbodyTypes}
+         setSelectedbodyTypes={setSelectedbodyTypes}
+      />
       <BrandFilter
          brands={brands}
          selectedBrands={selectedBrands}

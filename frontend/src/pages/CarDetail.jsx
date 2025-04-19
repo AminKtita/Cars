@@ -139,7 +139,7 @@ export const CarDetail = () => {
   
 
   return (
-    <div className="min-h-screen overflow-hidden">
+    <div className="min-h-screen overflow-hidden px-4 sm:px-4 md:px-6 lg:px-8">
        <button 
         onClick={() => navigate(-1)}
         className="fixed top-4 left-4 bg-white p-2 rounded-full shadow-lg hover:shadow-xl transition-shadow"

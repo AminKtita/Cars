@@ -15,6 +15,10 @@ export const CarListView = ({ filterProducts }) => {
           model={item.model_name}
           year={item.year}
           mileage={item.mileage}
+          fuel={item.fuel_type}
+          gearbox={item.gearbox_type}
+
+
         />
       ))}
     </div>

@@ -25,6 +25,7 @@ class CarItem(scrapy.Item):
     gearbox_type=scrapy.Field()
     model_name=scrapy.Field()
     brand_name=scrapy.Field()
+    body_type=scrapy.Field()
     color=scrapy.Field()
     country=scrapy.Field()
     images=scrapy.Field()

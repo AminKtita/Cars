@@ -57,6 +57,7 @@ class CarspiderSpider(scrapy.Spider):
             car_item['gearbox_type'] = owner_vehicle.get('gearbox', {}).get('name', 'N/A'),
             car_item['model_name'] = owner_vehicle.get('model', {}).get('model_name', 'N/A'),
             car_item['brand_name'] = owner_vehicle.get('model', {}).get('brand_car', {}).get('name', 'N/A'),
+            car_item['body_type'] = owner_vehicle.get('body_vehicle', {}).get('name', 'N/A'),
             car_item['color'] = owner_vehicle.get('outside_color', {}).get('name', 'N/A') if owner_vehicle.get('outside_color') else 'N/A',
             car_item['country'] = ad.get('user_data', {}).get('limited_address', {}).get('country', 'N/A'),
             car_item['images'] = [media.get('original_url', 'N/A') for media in owner_vehicle.get('media', [])] if owner_vehicle else ['N/A']
