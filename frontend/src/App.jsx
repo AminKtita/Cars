@@ -2,7 +2,6 @@ import {Home} from './pages/Home'
 import { Navbar } from './components/Navbar'
 import { CarList } from './pages/CarList'
 import { CarDetail } from './pages/CarDetail'
-import { SearchBar } from './components/SearchBar'
 import { LoginSignUp } from './pages/LoginSignUp'
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { useEffect } from 'react';
@@ -12,6 +11,13 @@ import { FavoritesPage } from './pages/FavoritesPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { SavedFiltersPage } from './pages/SavedFiltersPage'
 import { FaqPage } from './pages/FaqPage'
+import { TermsPage } from './pages/TermsPage'
+import { ContactPage } from './pages/ContactPage'
+import { NotFoundPage } from './pages/NotFoundPage'
+import { Footer } from './components/Footer'
+import { ProfilePage } from './pages/ProfilePage'
+
+
 
 
 
@@ -41,7 +47,6 @@ export const App = () => {
   return (
     <div>
       <Navbar />
-      <SearchBar />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<LoginSignUp />} />
@@ -72,10 +77,21 @@ export const App = () => {
           <SavedFiltersPage />
          </ProtectedRoute>
         } />
-      <Route path='/faq' element={<FaqPage />} />
 
-          
+      <Route path='/Profile' element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }/>
+      <Route path='/faq' element={<FaqPage />} />
+      <Route path='/terms' element={<TermsPage />} />
+      <Route path='/contact' element={<ContactPage />} />
+
+
+
+      <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      <Footer />
     </div>
   )
 }

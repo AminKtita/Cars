@@ -32,10 +32,20 @@ import brand3 from './3.jpg'
 import brand4 from './4.jpg' 
 import brand5 from './5.png' 
 import brand6 from './6.jpg' 
+
 import camera from './camera.png'
 import fuel from './fuel-station.png'
 import gearbox from './gearbox.png'
 import speedometer from './speedometer.png'
+import color from './color.png'
+import country from './country.png'
+import car_engine from './car-engine.png'
+import calender from './calendar.png'
+import car_icon from './car_icon.png'
+import body_type from './body-type.png'
+
+
+
 import sedan from './sedan.png'
 import suv from './suv.png'
 import van from './van.png'
@@ -66,6 +76,21 @@ import search from './search.png'
 import support_icon from './support_icon.png'
 import faq_icon from './faq_icon.png'
 import faq_bg from './faq_bg.jpg'
+import ftRight from './ft-right.png'
+import ftLeft from './ft-left.png'
+import terms from './terms.png'
+import facebook from './facebook.png'
+import instagram from './instagram.png'
+import twitter from './twitter.png'
+import linkedin from './linkedin.png'
+import france from './france.png'
+import germany from './germany.png'
+import image from './image.png'
+import open_eye from './open_eye.png'
+import close_eye from './close_eye.png'
+
+
+
 
 
 
@@ -109,10 +134,13 @@ export const assets = {
     car,car2,
     icon,
     brand1,brand2,brand3,brand4,brand5,brand6,
-    camera,fuel,gearbox,speedometer,year,
+    camera,fuel,gearbox,speedometer,year,color,country,car_engine,car_icon,calender,body_type,
     sedan,suv,van,hatchback,mini,wagon,
     popular,phone,email,phone_white,
     cars,europe,customer,
     reviwer,quote,
-    shield_icon,currency_icon,bell_icon,search,support_icon,faq_icon
+    shield_icon,currency_icon,bell_icon,search,support_icon,faq_icon,terms,
+    ftRight,ftLeft,
+    facebook,instagram,linkedin,twitter,
+    france,germany,image,open_eye,close_eye
 }

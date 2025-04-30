@@ -13,6 +13,7 @@ const carSchema = new mongoose.Schema({
   gearboxType: { type: String, alias: 'gearbox_type' },
   modelName: { type: String, alias: 'model_name' },
   brandName: { type: String, alias: 'brand_name' },
+  bodyType: { type: String, alias: 'body_type' },
   color: String,
   country: String,
   images: [String],

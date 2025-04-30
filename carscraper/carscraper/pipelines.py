@@ -37,8 +37,8 @@ FUEL_TYPE_NORMALIZATION = {
 }
 
 GEARBOX_NORMALIZATION = {
-    'auto': 'Automatic',
-    'automatic': 'Automatic',
+    'auto': 'Auto',
+    'automatic': 'Auto',
     'manual': 'Manual'
 }
 

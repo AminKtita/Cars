@@ -3,6 +3,7 @@ import React from 'react';
 const filterLabels = {
   selectedBrands: 'Brands',
   selectedModel: 'Model',
+  selectedbodyTypes: 'Body Types',
   minPrice: 'Min Price',
   maxPrice: 'Max Price',
   selectedTransmissions: 'Transmissions',

@@ -1,8 +1,9 @@
-import React ,{useState}from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { assets } from '../../assets/assets';
 
 export const BrandFilter = ({ brands, selectedBrands, setSelectedBrands }) => {
-  const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const brandLogos = JSON.parse(localStorage.getItem('brandLogos')) || {};
   const fallbackLogo = 'https://placehold.co/30x30';
 
@@ -14,50 +15,76 @@ export const BrandFilter = ({ brands, selectedBrands, setSelectedBrands }) => {
     );
   };
 
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <div className='border border-gray-300 px-2 py-3 mt-6'>
-      <p className='mb-3 text-sm font-medium text-center'>BRAND</p>
+    <div className="border border-gray-200 rounded-lg p-4 mt-6 bg-white shadow-sm relative" ref={dropdownRef}>
+      <h3 className="text-sm font-semibold text-gray-700 mb-2">BRAND</h3>
+      
       <button
-        className='w-full p-2 border border-gray-300 rounded text-left'
-        onClick={() => setIsBrandModalOpen(true)}
+        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-md text-sm text-left 
+                   hover:border-red-500 focus:border-red-600 focus:ring-2 focus:ring-red-200
+                   flex justify-between items-center"
+        onClick={() => setIsOpen(!isOpen)}
       >
-        {selectedBrands.length > 0 
-          ? `${selectedBrands.length} selected` 
-          : 'Select Brand(s)'}
+        <span className="truncate">
+          {selectedBrands.length > 0 
+            ? `${selectedBrands.length} selected` 
+            : 'Select brands'}
+        </span>
+        <svg 
+          className={`w-4 h-4 transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
 
-      {isBrandModalOpen && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'>
-          <div className='bg-white p-6 rounded-lg w-11/12 max-w-4xl max-h-[80vh] overflow-y-auto'>
-            <div className='flex justify-between items-center mb-4'>
-              <h2 className='text-xl font-semibold'>Select Brands</h2>
+      {isOpen && (
+        <div className="absolute z-10 mt-2 w-full bg-white border border-gray-200 rounded-md shadow-lg
+                       max-h-96 overflow-y-auto">
+          <div className="flex flex-col space-y-2 p-2">
+            {brands.map((brand) => (
               <button
-                onClick={() => setIsBrandModalOpen(false)}
-                className='p-2 hover:bg-gray-100 rounded-full'
+                key={brand}
+                className={`w-full px-4 py-2 flex items-center space-x-3 rounded-md
+                          text-sm text-left transition-colors duration-200
+                          ${
+                            selectedBrands.includes(brand)
+                              ? 'bg-red-50 border-red-600'
+                              : 'hover:bg-gray-50 border-transparent'
+                          }`}
+                onClick={() => handleBrandSelect(brand)}
               >
-                <img src={assets.cross_icon} alt='Close' className='w-4 h-4' />
+                <img
+                  src={brandLogos[brand] || fallbackLogo}
+                  alt={brand}
+                  className="w-8 h-8 object-contain"
+                />
+                <span className="flex-1 text-gray-700 font-medium">{brand}</span>
+                {selectedBrands.includes(brand) && (
+                  <svg 
+                    className="w-4 h-4 text-red-600" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
               </button>
-            </div>
-            <div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4'>
-              {brands.map((brand) => (
-                <div
-                  key={brand}
-                  className={`p-4 border ${
-                    selectedBrands.includes(brand) 
-                      ? 'border-blue-500' 
-                      : 'border-gray-300'
-                  } rounded-lg cursor-pointer hover:bg-gray-100`}
-                  onClick={() => handleBrandSelect(brand)}
-                >
-                  <img
-                    src={brandLogos[brand] || fallbackLogo}
-                    alt={brand}
-                    className='w-16 h-16 mx-auto mb-2'
-                  />
-                  <p className='text-center text-sm'>{brand}</p>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
       )}

@@ -40,33 +40,34 @@ export const PopularByBrand = () => {
     const handleOnClick = (index) => setActiveIndex(index);
 
     return (
-        <div className="py-16 md:py-24 px-4 lg:px-8">
+        <div className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-7xl">
                 {/* Header Section */}
-                <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center">
-                    <div className="mb-6 md:mb-0">
-                        <span className="block text-red-600 font-medium mb-2">
+                <div className="mb-8 md:mb-12 flex flex-col gap-4 sm:gap-6 md:flex-row justify-between items-start">
+                    <div className="mb-4 md:mb-0">
+                        <span className="block text-red-600 font-medium text-sm md:text-base mb-1 md:mb-2">
                             Trusted Car Dealer Service
                         </span>
-                        <h3 className="text-3xl md:text-4xl font-bold">
+                        <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight">
                             Popular Cars By Brand
                         </h3>
                     </div>
 
                     {/* Tabs Navigation */}
-                    <ul className="flex flex-wrap gap-2 md:gap-3">
+                    <ul className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-3">
                         {tabs.map((tab) => (
                             <li key={tab.id}>
-                            <button 
-                                onClick={() => handleOnClick(tab.id)}
-                                className={`px-3 py-1.5 text-sm transition-all duration-200 ${
-                                activeIndex === tab.id 
-                                    ? 'bg-red-600 text-white shadow-lg shadow-red-200/50'
-                                    : 'bg-white text-gray-600 shadow-md shadow-gray-100 hover:bg-gray-50 hover:shadow-lg'
-                                }`}
-                            >
-                                {tab.name}
-                            </button>
+                                <button 
+                                    onClick={() => handleOnClick(tab.id)}
+                                    className={`px-2.5 sm:px-3 py-1 text-xs sm:text-sm transition-all duration-200 rounded-md
+                                        ${
+                                            activeIndex === tab.id 
+                                                ? 'bg-red-600 text-white shadow-md md:shadow-lg shadow-red-200/50'
+                                                : 'bg-white text-gray-600 shadow-sm md:shadow-md shadow-gray-100 hover:bg-gray-50 hover:shadow-lg'
+                                        }`}
+                                >
+                                    {tab.name}
+                                </button>
                             </li>
                         ))}
                     </ul>
@@ -74,9 +75,11 @@ export const PopularByBrand = () => {
 
                 {/* Cars Grid */}
                 {loading ? (
-                    <div className="text-center py-8">Loading popular cars...</div>
+                    <div className="text-center py-6 md:py-8 text-sm md:text-base">
+                        Loading popular cars...
+                    </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 items-center">
                         {cars.length > 0 ? (
                             cars.map((car) => (
                                 <CarItem
@@ -94,7 +97,7 @@ export const PopularByBrand = () => {
                                 />
                             ))
                         ) : (
-                            <div className="col-span-2 text-center py-8">
+                            <div className="col-span-full text-center py-6 md:py-8 text-sm md:text-base">
                                 No popular cars found for this brand
                             </div>
                         )}

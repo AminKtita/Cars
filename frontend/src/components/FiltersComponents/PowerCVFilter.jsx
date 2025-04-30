@@ -1,133 +1,35 @@
-import React, { useRef, useEffect } from 'react';
-import { assets } from '../../assets/assets';
+import React, { useState, useEffect } from 'react';
+import { RangeSlider } from '../RangeSlider';
 
 export const PowerCVFilter = ({ minPowerCV, setMinPowerCV, maxPowerCV, setMaxPowerCV }) => {
-  const [showMinOptions, setShowMinOptions] = React.useState(false);
-  const [showMaxOptions, setShowMaxOptions] = React.useState(false);
-
-  const powerOptions = [50, 100, 150, 200, 250, 300, 400, 500];
-  const minDropdownRef = useRef(null);
-  const maxDropdownRef = useRef(null);
+  const [PowerCVRange, setPowerCVRange] = useState([0, 500]);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (minDropdownRef.current && !minDropdownRef.current.contains(event.target)) {
-        setShowMinOptions(false);
-      }
-      if (maxDropdownRef.current && !maxDropdownRef.current.contains(event.target)) {
-        setShowMaxOptions(false);
-      }
-    };
+    if (minPowerCV && maxPowerCV) {
+      setPowerCVRange([Number(minPowerCV), Number(maxPowerCV)]);
+    }
+  }, [minPowerCV, maxPowerCV]);
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const toggleMinDropdown = () => {
-    setShowMinOptions(!showMinOptions);
-    setShowMaxOptions(false);
-  };
-
-  const toggleMaxDropdown = () => {
-    setShowMaxOptions(!showMaxOptions);
-    setShowMinOptions(false);
+  const handlePowerCVChange = (event, newValues) => {
+    setPowerCVRange(newValues);
+    setMinPowerCV(newValues[0]);
+    setMaxPowerCV(newValues[1]);
   };
 
   return (
-    <div className='border border-gray-300 px-2 py-3 mt-6'>
-      <p className='mb-3 text-sm font-medium text-center'>POWER RANGE (CV)</p>
-      <div className='flex gap-2'>
-        {/* Min Power Input */}
-        <div className='w-1/2 flex items-center relative' ref={minDropdownRef}>
-          <input
-            type='number'
-            placeholder='Min'
-            className='w-full p-2 border border-gray-300 rounded text-sm pr-14'
-            value={minPowerCV}
-            onChange={(e) => setMinPowerCV(e.target.value)}
-            min='0'
-            step='10'
-          />
-          {minPowerCV && (
-            <img
-              src={assets.cross_icon}
-              alt='Clear'
-              className='absolute right-8 top-1/2 transform -translate-y-1/2 h-3 w-3 cursor-pointer hover:opacity-70'
-              onClick={() => {
-                setMinPowerCV('');
-                setShowMinOptions(false);
-              }}
-            />
-          )}
-          <img
-            src={assets.dropdown_icon}
-            alt='Dropdown'
-            className='absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 rotate-90 cursor-pointer'
-            onClick={toggleMinDropdown}
-          />
-          {showMinOptions && (
-            <div className='absolute top-full left-0 w-full bg-white border border-gray-300 rounded mt-1 z-10 max-h-40 overflow-y-auto'>
-              {powerOptions.map((power) => (
-                <div
-                  key={power}
-                  className='p-2 hover:bg-gray-100 cursor-pointer'
-                  onClick={() => {
-                    setMinPowerCV(power);
-                    setShowMinOptions(false);
-                  }}
-                >
-                  {power}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Max Power Input */}
-        <div className='w-1/2 flex items-center relative' ref={maxDropdownRef}>
-          <input
-            type='number'
-            placeholder='Max'
-            className='w-full p-2 border border-gray-300 rounded text-sm pr-14'
-            value={maxPowerCV}
-            onChange={(e) => setMaxPowerCV(e.target.value)}
-            min='0'
-            step='10'
-          />
-          {maxPowerCV && (
-            <img
-              src={assets.cross_icon}
-              alt='Clear'
-              className='absolute right-8 top-1/2 transform -translate-y-1/2 h-3 w-3 cursor-pointer hover:opacity-70'
-              onClick={() => {
-                setMaxPowerCV('');
-                setShowMaxOptions(false);
-              }}
-            />
-          )}
-          <img
-            src={assets.dropdown_icon}
-            alt='Dropdown'
-            className='absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 rotate-90 cursor-pointer'
-            onClick={toggleMaxDropdown}
-          />
-          {showMaxOptions && (
-            <div className='absolute top-full left-0 w-full bg-white border border-gray-300 rounded mt-1 z-10 max-h-40 overflow-y-auto'>
-              {powerOptions.map((power) => (
-                <div
-                  key={power}
-                  className='p-2 hover:bg-gray-100 cursor-pointer'
-                  onClick={() => {
-                    setMaxPowerCV(power);
-                    setShowMaxOptions(false);
-                  }}
-                >
-                  {power}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+    <div className="border border-gray-200 rounded-lg p-4 mb-6 bg-white shadow-sm">
+      <h3 className="text-sm font-semibold text-gray-700 mb-4">Power CV Range</h3>
+      <RangeSlider
+        min={0}
+        max={500}
+        value={PowerCVRange}
+        onChange={handlePowerCVChange}
+      />
+      <div className="flex justify-between mt-4 text-sm font-medium text-red-700">
+      <span>Selected Range: </span>
+        <span>
+          {PowerCVRange[0]} - {PowerCVRange[1]} 
+        </span>
       </div>
     </div>
   );

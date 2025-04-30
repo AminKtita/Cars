@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { getCars } from '../services/api';
 import { Title } from '../components/Title';
-import { CarContext } from '../context/CarContext';
+import { AppContext } from '../context/AppContext';
 import { FilterSection } from '../components/FilterSection';
 import { SortSection } from '../components/SortSection';
 import { CarGrid } from '../components/CarGrid';
@@ -32,7 +32,7 @@ export const CarList = () => {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [sortBy, setSortBy] = useState('');
-  const {search, setSearch } = useContext(CarContext);
+  const {search, setSearch } = useContext(AppContext);
   const [minPowerCV, setMinPowerCV] = useState('');
   const [maxPowerCV, setMaxPowerCV] = useState('');
   const [minYear, setMinYear] = useState('');
@@ -95,23 +95,22 @@ useEffect(() => {
   loadPresets();
 }, []);
   const applySavedFilter = (preset) => {
-    setSelectedBrands(preset.filters.selectedBrands);
-    setSelectedbodyTypes(preset.filters.SelectedbodyTypes);
-
-    setSelectedModel(preset.filters.selectedModel);
-    setMinPrice(preset.filters.minPrice);
-    setMaxPrice(preset.filters.maxPrice);
-    setSelectedTransmissions(preset.filters.selectedTransmissions);
-    setSelectedFuelTypes(preset.filters.selectedFuelTypes);
-    setMinYear(preset.filters.minYear);
-    setMaxYear(preset.filters.maxYear);
-    setMinMileage(preset.filters.minMileage);
-    setMaxMileage(preset.filters.maxMileage);
-    setMinPowerCV(preset.filters.minPowerCV);
-    setMaxPowerCV(preset.filters.maxPowerCV);
+    setSelectedBrands(Array.isArray(preset.filters.selectedBrands) ? preset.filters.selectedBrands : []);
+    setSelectedbodyTypes(Array.isArray(preset.filters.selectedbodyTypes) ? preset.filters.selectedbodyTypes : []);
+    setSelectedModel(preset.filters.selectedModel || '');
+    setMinPrice(preset.filters.minPrice || '');
+    setMaxPrice(preset.filters.maxPrice || '');
+    setSelectedTransmissions(preset.filters.selectedTransmissions || []);
+    setSelectedFuelTypes(preset.filters.selectedFuelTypes || []);
+    setMinYear(preset.filters.minYear || '');
+    setMaxYear(preset.filters.maxYear || '');
+    setMinMileage(preset.filters.minMileage || '');
+    setMaxMileage(preset.filters.maxMileage || '');
+    setMinPowerCV(preset.filters.minPowerCV || '');
+    setMaxPowerCV(preset.filters.maxPowerCV || '');
   };
   
-const deleteSavedFilter = async (presetId) => {
+  const deleteSavedFilter = async (presetId) => {
   try {
     await deleteFilterPreset(presetId);
     setSavedFilters(prev => prev.filter(p => p._id !== presetId));
@@ -126,7 +125,6 @@ const deleteSavedFilter = async (presetId) => {
     // Set all filter states from URL params
     setSelectedBrands(params.brand ? params.brand.split(',') : []);
     setSelectedbodyTypes(params.bodyTypes ? params.bodyTypes.split(',') : []);
-
     setSelectedModel(params.model || '');
     setSelectedTransmissions(params.transmission ? params.transmission.split(',') : []);
     setSelectedFuelTypes(params.fuel ? params.fuel.split(',') : []);
@@ -142,25 +140,24 @@ const deleteSavedFilter = async (presetId) => {
   }, []);
 
   useEffect(() => {
-    
     const params = {
-      brand: selectedBrands.join(','),
-      bodyTypes: selectedbodyTypes.join(','),
-      model: selectedModel,
-      transmission: selectedTransmissions.join(','),
-      fuel: selectedFuelTypes.join(','),         
-      minPrice,
-      maxPrice,
-      minMileage,
-      maxMileage,
-      minYear,
-      maxYear,
-      minPowerCV,
-      maxPowerCV,
-      sortBy:sortBy,
+      brand: selectedBrands?.join(',') || '',
+      bodyTypes: selectedbodyTypes?.join(',') || '',
+      model: selectedModel || '',
+      transmission: selectedTransmissions?.join(',') || '',
+      fuel: selectedFuelTypes?.join(',') || '',         
+      minPrice: minPrice || '',
+      maxPrice: maxPrice || '',
+      minMileage: minMileage || '',
+      maxMileage: maxMileage || '',
+      minYear: minYear || '',
+      maxYear: maxYear || '',
+      minPowerCV: minPowerCV || '',
+      maxPowerCV: maxPowerCV || '',
+      sortBy: sortBy || '',
     };
     setSearchParams(params);
-  }, [selectedBrands,selectedbodyTypes, selectedModel, selectedFuelTypes, selectedTransmissions, minPrice, maxPrice, minMileage, maxMileage, minYear, maxYear, minPowerCV, maxPowerCV, sortBy]);
+    }, [selectedBrands,selectedbodyTypes, selectedModel, selectedFuelTypes, selectedTransmissions, minPrice, maxPrice, minMileage, maxMileage, minYear, maxYear, minPowerCV, maxPowerCV, sortBy]);
 
 
   // Pagination state
@@ -389,36 +386,40 @@ const deleteSavedFilter = async (presetId) => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-2 border-t space-y-2 px-4 sm:px-4 md:px-6 lg:px-8'>
-      <div className='sm:hidden flex justify-between items-center px-2'>
-        <div className='flex items-center gap-2'>
-          <p 
-            onClick={() => setShowFilter(!showFilter)} 
-            className='my-2 text-xl font-semibold'
-          > 
-            FILTERS
-          </p>
-          <img 
-            className={`h-3 transition-transform ${showFilter ? 'rotate-90' : ''}`} 
-            src={assets.dropdown_icon} 
-            alt='' 
-          />
-        </div>
-        <div className='flex gap-2'>
-          {/* Add Save button */}
+    <div className='flex flex-col sm:flex-row gap-6 py-4 px-4 md:px-6 lg:px-8'>
+      {/* Mobile Filter Header */}
+      <div className='sm:hidden flex justify-between items-center bg-white p-4 rounded-lg shadow-sm'>
+        <button 
+          onClick={() => setShowFilter(!showFilter)} 
+          className='flex items-center gap-2 text-red-600 font-semibold'
+        >
+          FILTERS
+          <svg 
+            className={`w-4 h-4 transform transition-transform ${showFilter ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div className='flex gap-3'>
           <button 
-            className='p-2 hover:bg-gray-100 rounded-full'
+            className='p-2 hover:bg-red-50 rounded-md transition-colors'
             onClick={handleSaveClick}
           >
-            <img src={assets.save} alt='Save' className='w-4 h-4' />
+            <img src={assets.save} alt='Save' className='w-5 h-5' />
           </button>
-          {/* Existing Reset button */}
-          <button className='p-2 hover:bg-gray-100 rounded-full' onClick={resetFilters}>
-            <img src={assets.cross_icon} alt='Reset' className='w-4 h-4' />
+          <button 
+            className='p-2 hover:bg-red-50 rounded-md transition-colors' 
+            onClick={resetFilters}
+          >
+            <img src={assets.cross_icon} alt='Reset' className='w-5 h-5' />
           </button>
         </div>
       </div>
-      {/* FilterSection */}
+
+      {/* Filter Section */}
       <FilterSection
         savedFilters={savedFilters}
         onSaveClick={handleSaveClick}
@@ -469,30 +470,43 @@ const deleteSavedFilter = async (presetId) => {
           setSelectedFuelTypes(prev => prev.includes(fuel) ? prev.filter(f => f !== fuel) : [...prev, fuel])
         }
         resetFilters={resetFilters}
+        className={`sm:block w-full sm:w-80 ${showFilter ? 'block' : 'hidden'}`}
       />
 
       {/* Main Content */}
-      <div className='flex-1'>
-        <div className='flex justify-between items-center text-base sm:text-2xl'>
-          <Title text1={'ALL'} text2={'CARS'} />
-          <div className='sm:flex items-center gap-4 space-y-2'>
-          <ViewSelector viewMode={viewMode} setViewMode={setViewMode} />
-          <SortSection sortBy={sortBy} setSortBy={setSortBy} />
-        </div>
+      <div className='flex-1 space-y-6'>
+        {/* Header Section */}
+        <div className='bg-white p-4 rounded-lg shadow-sm'>
+          <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
+            <Title text1={'ALL'} text2={'CARS'} className='text-2xl sm:text-3xl' />
+            <div className='flex items-center gap-4 w-full sm:w-auto'>
+              <ViewSelector viewMode={viewMode} setViewMode={setViewMode} />
+              <SortSection sortBy={sortBy} setSortBy={setSortBy} />
+            </div>
+          </div>
         </div>
 
+        {/* Content */}
         {viewMode === 'grid' ? (
-        <CarGrid filterProducts={filterProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} />
-      ) : (
-        <CarListView filterProducts={filterProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} />
-      )}
+          <CarGrid 
+            filterProducts={filterProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} 
+            className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'
+          />
+        ) : (
+          <CarListView 
+            filterProducts={filterProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} 
+            className='space-y-4'
+          />
+        )}
 
+        {/* Pagination */}
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           itemsPerPage={itemsPerPage}
           onPageChange={handlePageChange}
           onItemsPerPageChange={handleItemsPerPageChange}
+          className='bg-white p-4 rounded-lg shadow-sm'
         />
       </div>
     </div>

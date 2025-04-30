@@ -204,3 +204,23 @@ export const getMostViewedCar = async () => {
     throw error;
   }
 };
+
+export const getProfile = async () => {
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const response = await axios.get(`${API_URL}/api/auth/profile`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};
+
+// Update profile
+export const updateProfile = async (formData) => {
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const response = await axios.put(`${API_URL}/api/auth/profile`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+};

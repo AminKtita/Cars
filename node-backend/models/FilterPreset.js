@@ -12,6 +12,7 @@ const filterPresetSchema = new mongoose.Schema({
   },
   filters: {
     selectedBrands: [String],
+    selectedbodyTypes: [String],
     selectedModel: String,
     minPrice: Number,
     maxPrice: Number,

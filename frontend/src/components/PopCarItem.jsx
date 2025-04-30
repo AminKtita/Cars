@@ -36,17 +36,26 @@ export const PopCarItem = ({   id,
   };
 
   useEffect(() => {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const isLoggedIn = token ? !isTokenExpired(token) : false;
+  
     const checkFavoriteStatus = async () => {
       try {
-        const { isFavorite } = await checkFavorite(id);
-        setIsFavorite(isFavorite);
+        if (isLoggedIn) {
+          const { isFavorite } = await checkFavorite(id);
+          setIsFavorite(isFavorite);
+        } else {
+          setIsFavorite(false);
+        }
       } catch (err) {
         console.error('Error checking favorite:', err);
+        setIsFavorite(false);
       }
     };
+    
     checkFavoriteStatus();
-  }, [id]);
-
+  }, [id]); 
+  
   return (
     <div className="group relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
       <div className="cursor-pointer" onClick={handleClick}>

@@ -50,3 +50,9 @@ a.active hr{
 .thumbnail-next:hover {
   background-color: rgba(0, 0, 0, 0.5);
 }
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+.filter-red {
+  filter: invert(16%) sepia(89%) saturate(6058%) hue-rotate(358deg) brightness(99%) contrast(117%);
+}

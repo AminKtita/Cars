@@ -9,8 +9,15 @@ const userActionsRoutes = require('./routes/userActions');
 const favoriteRoutes = require('./routes/favorites');
 const filterPresetRoutes = require('./routes/filterPresets');
 const recommendationRoutes = require('./routes/recommendation');
+const path = require('path');
 
 
+const fs = require('fs');
+const uploadDir = path.join(__dirname, 'uploads');
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 
 
@@ -45,6 +52,7 @@ app.use('/api/user-actions', userActionsRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/filter-presets', filterPresetRoutes);
 app.use('/api/recommend', recommendationRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 

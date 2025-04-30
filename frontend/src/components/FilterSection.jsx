@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { PriceRangeFilter } from './FiltersComponents/PriceRangeFilter';
 import { BrandFilter } from './FiltersComponents/BrandFilter';
 import { ModelFilter } from './FiltersComponents/ModelFilter';
@@ -8,6 +8,8 @@ import { YearFilter } from './FiltersComponents/YearFilter';
 import { MileageFilter } from './FiltersComponents/MileageFilter';
 import { PowerCVFilter } from './FiltersComponents/PowerCVFilter';
 import { BodyTypeFilter } from './FiltersComponents/BodyTypeFilter';
+import { SearchInput } from './SearchInput';
+
 
 import { assets } from '../assets/assets';
 
@@ -37,7 +39,9 @@ export const FilterSection = ({
   
 
 }) => {
+
   return (
+    
 <div className={`min-w-60 md:w-48 lg:w-72 ${showFilter ? 'block' : 'hidden'} sm:block`}>
 <div className="hidden sm:flex justify-between items-center gap-2 p-2">
 <p className='my-2 text-xl font-semibold'>FILTERS</p>
@@ -104,7 +108,7 @@ export const FilterSection = ({
             <div className="flex gap-2">
               <button
                 onClick={onSaveConfirm}
-                className="flex-1 text-sm bg-violet-500 text-white px-2 py-1 rounded"
+                className="flex-1 text-sm bg-red-600 text-white px-2 py-1 rounded"
               >
                 Save
               </button>
@@ -119,10 +123,12 @@ export const FilterSection = ({
         )}
       </div>
       {/* Filter Components */}
-      <BodyTypeFilter
-         bodyTypes={bodyTypes}
-         selectedbodyTypes={selectedbodyTypes}
-         setSelectedbodyTypes={setSelectedbodyTypes}
+        {/* Search bar */}
+        <SearchInput />
+        <BodyTypeFilter
+        bodyTypes={bodyTypes || []}
+        selectedbodyTypes={selectedbodyTypes || []}
+        setSelectedbodyTypes={setSelectedbodyTypes}
       />
       <BrandFilter
          brands={brands}

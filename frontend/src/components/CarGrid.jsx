@@ -13,6 +13,9 @@ export const CarGrid = ({ filterProducts }) => {
           image={item.images}
           brand={item.brand_name}
           model={item.model_name}
+          fuel={item.fuel_type}
+          gearbox={item.gearbox_type}
+          mileage={item.mileage}
         />
       ))}
     </div>
