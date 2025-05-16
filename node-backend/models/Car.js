@@ -17,6 +17,16 @@ const carSchema = new mongoose.Schema({
   color: String,
   country: String,
   images: [String],
+  reviews: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    comfort: { type: Number, required: true, min: 1, max: 5 },
+    performance: { type: Number, required: true, min: 1, max: 5 },
+    interiorDesign: { type: Number, required: true, min: 1, max: 5 },
+    speed: { type: Number, required: true, min: 1, max: 5 },
+    comment: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+  }],
+
 });
 
 module.exports = mongoose.model('Car', carSchema, 'carspider');

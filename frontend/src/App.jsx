@@ -18,6 +18,10 @@ import { Footer } from './components/Footer'
 import { ProfilePage } from './pages/ProfilePage'
 
 
+import { Dashboard } from './pages/Dashboard'
+
+
+
 
 
 
@@ -86,6 +90,10 @@ export const App = () => {
       <Route path='/faq' element={<FaqPage />} />
       <Route path='/terms' element={<TermsPage />} />
       <Route path='/contact' element={<ContactPage />} />
+
+
+      <Route path='/dashboard' element={<Dashboard />} />
+
 
 
 

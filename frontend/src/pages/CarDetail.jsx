@@ -5,8 +5,9 @@ import { AppContext } from '../context/AppContext';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay, Pagination } from 'swiper/modules';
 import { useNavigate } from 'react-router-dom';
-import { logUserAction, toggleFavorite, checkFavorite } from '../services/api';
+import { logUserAction, toggleFavorite, checkFavorite ,getCarReviews} from '../services/api';
 import { assets } from '../assets/assets';
+import { ReviewsSection, ReviewForm } from '../components/Reviews';
 
 
 // Import required styles
@@ -28,6 +29,53 @@ export const CarDetail = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
+  const [reviews, setReviews] = useState([]);
+
+
+  const mockReviews = [
+    {
+      id: 1,
+      author: "John Doe",
+      rating: 4,
+      date: "2024-03-15",
+      comment: "Great car! Loved the comfortable seats and smooth driving experience.",
+      avatar: "https://example.com/avatar1.jpg"
+    },
+    {
+      id: 2,
+      author: "Jane Smith",
+      rating: 5,
+      date: "2024-03-14",
+      comment: "Excellent performance and amazing interior design. Highly recommend!"
+    },
+    // Add more mock reviews as needed
+  ];
+
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const reviewsData = await getCarReviews(CarId);
+        setReviews(reviewsData);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    };
+    
+    fetchReviews();
+  }, [CarId]);
+  
+const handleNewReview = async (newReview) => {
+  if (newReview) {
+    // Add directly if we have full data
+    setReviews(prev => [newReview, ...prev]);
+  } else {
+    // Otherwise refresh from server
+    const reviewsData = await getCarReviews(CarId);
+    setReviews(reviewsData);
+  }
+};
+  
 
   // Add autoplay effect with useEffect
   useEffect(() => {
@@ -381,59 +429,59 @@ export const CarDetail = () => {
         {/* Specifications Grid */}
         <div className="row mt-8">
         <div className="col-lg-8">
-  <div className="post-property">
-    <div className="wrap-car-overview wrap-style bg-white p-6 rounded-lg shadow">
-      <h4 className="title text-xl font-bold mb-4">Vehicle Overview</h4>
-      <div className="listing-info">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {specifications.map((spec, index) => (
-            <div key={index} className="col-md-6">
-              <div className="inner listing-infor-box flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                {/* Icon */}
-                <div className="shrink-0">
-                  <img 
-                    src={spec.icon} 
-                    alt={spec.label}
-                    className="w-6 h-6 object-contain filter-red" 
-                  />
-                </div>
+            <div className="post-property">
+              <div className="wrap-car-overview wrap-style bg-white p-6 rounded-lg shadow">
+                <h4 className="title text-xl font-bold mb-4">Vehicle Overview</h4>
+                <div className="listing-info">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {specifications.map((spec, index) => (
+                      <div key={index} className="col-md-6">
+                        <div className="inner listing-infor-box flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                          {/* Icon */}
+                          <div className="shrink-0">
+                            <img 
+                              src={spec.icon} 
+                              alt={spec.label}
+                              className="w-6 h-6 object-contain filter-red" 
+                            />
+                          </div>
 
-                {/* Content */}
-                <div className="flex-1 flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-600">
-                    {spec.label}:
-                  </span>
-                  
-                  {/* Special cases for country and color */}
-                  <div className="flex items-center gap-2">
-                    {spec.label === 'Country' && (
-                      <img
-                        src={spec.value.toLowerCase() === 'france' ? assets.france : assets.germany}
-                        alt={spec.value}
-                        className="w-5 h-5 object-contain"
-                      />
-                    )}
-                    
-                    {spec.label === 'Color' && (
-                      <div 
-                        className="w-4 h-4 rounded-full shadow-sm border border-gray-200"
-                        style={{ backgroundColor: spec.value.toLowerCase().replace(' ', '') }}
-                      />
-                    )}
-                    
-                    <span className="text-sm font-medium text-gray-900">
-                      {spec.value}
-                    </span>
+                          {/* Content */}
+                          <div className="flex-1 flex justify-between items-center">
+                            <span className="text-sm font-medium text-gray-600">
+                              {spec.label}:
+                            </span>
+                            
+                            {/* Special cases for country and color */}
+                            <div className="flex items-center gap-2">
+                              {spec.label === 'Country' && (
+                                <img
+                                  src={spec.value.toLowerCase() === 'france' ? assets.france : assets.germany}
+                                  alt={spec.value}
+                                  className="w-5 h-5 object-contain"
+                                />
+                              )}
+                              
+                              {spec.label === 'Color' && (
+                                <div 
+                                  className="w-4 h-4 rounded-full shadow-sm border border-gray-200"
+                                  style={{ backgroundColor: spec.value.toLowerCase().replace(' ', '') }}
+                                />
+                              )}
+                              
+                              <span className="text-sm font-medium text-gray-900">
+                                {spec.value}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+          </div>
 
           {/* Sidebar */}
           <div className="col-lg-4 mt-8 md:mt-8">  {/* Changed from md:mt-0 to md:mt-8 */}
@@ -456,6 +504,11 @@ export const CarDetail = () => {
             </div>
         </div>
 
+        <div className="mt-12">
+          <ReviewsSection reviews={reviews} />
+          <ReviewForm carId={CarId} onReviewSubmit={handleNewReview} />
+        </div>
+            
         {/* Related Vehicles */}
         <div className="widget-related-single-listing mt-12">
           <h3 className="text-2xl font-bold mb-6">Related Vehicles</h3>

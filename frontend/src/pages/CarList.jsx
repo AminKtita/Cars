@@ -207,6 +207,20 @@ useEffect(() => {
       }
     }, 500);
   };
+  useEffect(() => {
+  const searchTimeout = setTimeout(async () => {
+    if (search && search.trim().length > 0) {
+      await logUserAction({
+        actionType: 'search',
+        details: {
+          searchQuery: search.trim()
+        }
+      });
+    }
+  }, 500);
+
+  return () => clearTimeout(searchTimeout);
+}, [search]); // Only trigger when search changes
 
   // Handle filter changes logging
   useEffect(() => {

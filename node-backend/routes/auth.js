@@ -39,7 +39,7 @@ router.post("/login", async (req, res) => {
     const expiresIn = rememberMe ? "7d" : "1h"; // 7 days if "Remember Me" is checked, else 1 hour
 
     // Create JWT
-    const token = jwt.sign({ userId: user._id ,username:user.username}, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: user._id ,username:user.username,role:user.role}, process.env.JWT_SECRET, {
       expiresIn,
     });
 

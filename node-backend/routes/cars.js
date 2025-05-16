@@ -1,6 +1,8 @@
 const express = require('express');
 const Car = require('../models/Car');
 const UserAction = require('../models/UserAction'); 
+const authMiddleware = require('../middleware/authMiddleware');
+
 
 const router = express.Router();
 
@@ -135,6 +137,154 @@ router.get('/most-viewed-ids/:brand', async (req, res) => {
   }
 });
 
+// Get reviews for a car
+router.get('/:id/reviews', async (req, res) => {
+  try {
+    const car = await Car.findById(req.params.id)
+      .populate('reviews.user', 'username profileImage') 
+      .select('reviews');
+    res.json(car.reviews);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
+// Add a review (protected route)
+router.post('/:id/reviews', authMiddleware, async (req, res) => {
+  try {
+;
+    const { comfort, performance, interiorDesign, speed, comment } = req.body;
+    const ratings = [
+      Number(comfort),
+      Number(performance),
+      Number(interiorDesign),
+      Number(speed)
+    ];
+    
+    if (!ratings.every(r => r >= 1 && r <= 5)) {
+      console.log('\n=== VALIDATION FAILED ===');
+      return res.status(400).json({ error: "All ratings must be between 1-5" });
+    }
 
+    const car = await Car.findById(req.params.id);
+    if (!car) return res.status(404).json({ error: "Car not found" });
+
+    const newReview = {
+      user: req.userId,
+      comfort: Number(comfort),
+      performance: Number(performance),
+      interiorDesign: Number(interiorDesign),
+      speed: Number(speed),
+      comment: String(comment).trim()
+    };
+
+    car.reviews.push(newReview);
+    await car.save();
+
+    // Return the full reviews array
+    const updatedCar = await Car.findById(req.params.id)
+      .populate({
+        path: 'reviews.user',
+        model: 'User',
+        select: 'username profileImage'
+      })
+      .select('reviews');
+    
+    res.status(201).json(updatedCar.reviews);
+    console.log('Received body:', req.body);
+  console.log('Parsed ratings:', [comfort, performance, interiorDesign, speed]);
+
+    
+  } catch (error) {
+    console.error('Review error:', error);
+    res.status(500).json({
+      error: error.message,
+      stack: error.stack,
+      receivedData: req.body
+    });
+  }
+});
+
+// Add to your car routes file (after existing routes)
+router.get('/reviews/top', async (req, res) => {
+  try {
+    const topReviews = await Car.aggregate([
+      // Step 1: Filter cars that have reviews
+      { $match: { reviews: { $exists: true, $not: { $size: 0 } } } },
+      
+      // Step 2: Unwind the reviews array to treat each review as a separate document
+      { $unwind: "$reviews" },
+      
+      // Step 3: Add computed fields
+      {
+        $addFields: {
+          "reviews.averageRating": {
+            $avg: [
+              "$reviews.comfort",
+              "$reviews.performance",
+              "$reviews.interiorDesign",
+              "$reviews.speed"
+            ]
+          },
+          "reviews.carTitle": "$vehicle_title",
+          "reviews.carBrand": "$brand_name"
+        }
+      },
+      
+      // Step 4: Sort by average rating (descending) and date (descending)
+      {
+        $sort: {
+          "reviews.averageRating": -1,
+          "reviews.createdAt": -1
+        }
+      },
+      
+      // Step 5: Limit to top 3 reviews
+      { $limit: 3 },
+      
+      // Step 6: Lookup user details
+      {
+        $lookup: {
+          from: "users",
+          localField: "reviews.user",
+          foreignField: "_id",
+          as: "reviews.userDetails"
+        }
+      },
+      
+      // Step 7: Unwind user details array
+      { $unwind: "$reviews.userDetails" },
+      
+      // Step 8: Project final format
+      {
+        $project: {
+          _id: "$reviews._id",
+          comment: "$reviews.comment",
+          ratings: {
+            comfort: "$reviews.comfort",
+            performance: "$reviews.performance",
+            interiorDesign: "$reviews.interiorDesign",
+            speed: "$reviews.speed"
+          },
+          averageRating: "$reviews.averageRating",
+          createdAt: "$reviews.createdAt",
+          user: {
+            username: "$reviews.userDetails.username",
+            profileImage: "$reviews.userDetails.profileImage"
+          },
+          car: {
+            title: "$reviews.carTitle",
+            brand: "$reviews.carBrand",
+            id: "$_id"
+          }
+        }
+      }
+    ]);
+
+    res.json(topReviews);
+  } catch (error) {
+    console.error('Error fetching top reviews:', error);
+    res.status(500).json({ error: 'Failed to fetch top reviews' });
+  }
+});
 module.exports = router;

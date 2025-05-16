@@ -43,10 +43,10 @@ export const CounterBanner = () =>{
                   alt="Vehicle icon"
                 />
               </div>
-              <div className="text-4xl font-bold text-red-600 mb-2">
+              <div className="text-4xl font-bold text-white mb-2">
               {inView && <><CounterUp count={200} duration={2}/>+</>}
               </div>
-              <p className="text-red-600 font-semibold">Vehicles</p>
+              <p className="text-white font-semibold">Vehicles</p>
             </div>
 
             {/* Satisfied Customers */}
@@ -58,10 +58,10 @@ export const CounterBanner = () =>{
                   alt="Customer icon"
                 />
               </div>
-              <div className="text-4xl font-bold text-red-600 mb-2">
+              <div className="text-4xl font-bold text-white mb-2">
               {inView && <><CounterUp count={50} duration={2}/>+</>}
               </div>
-              <p className="text-red-600 font-semibold">Satisfied Customers</p>
+              <p className="text-white font-semibold">Satisfied Customers</p>
             </div>
 
             {/* countries */}
@@ -73,10 +73,10 @@ export const CounterBanner = () =>{
                   alt="Showroom icon"
                 />
               </div>
-              <div className="text-4xl font-bold text-red-600 mb-2">
+              <div className="text-4xl font-bold text-white mb-2">
                 {inView && <><CounterUp count={2} duration={2}/>+</>}
               </div>
-              <p className="text-red-600 font-semibold">European Countries</p>
+              <p className="text-white font-semibold">European Countries</p>
             </div>
           </div>
         </div>

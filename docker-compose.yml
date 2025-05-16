@@ -79,8 +79,41 @@ services:
     volumes:
       - ./recommender:/app
     
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    ports:
+      - "3000:3000"
+    volumes:
+      - metabase_data:/metabase.db
+    depends_on:
+      - mongo
+    environment:
+      - MB_ENABLE_EMBEDDING=true
+      - MB_EMBEDDING_SECRET_KEY=your_secure_jwt_secret_here
+      - MB_JWT_SHARED_SECRET=your_shared_secret
+      - MB_SITE_URL=http://localhost:5174
+      - MB_JWT_ATTRIBUTE=email
+      - MB_JWT_GROUP_SYNC=true
+
+      
+  admin-dashboard:
+    build:
+      context: ./admin-dashboard
+      dockerfile: Dockerfile
+    container_name: admin-dashboard
+    ports:
+      - "5174:5174"
+    volumes:
+      - ./admin-dashboard:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev", "--", "--host"]
+    depends_on:
+      - metabase
+      - node-backend
 
 
 
 volumes:
   mongo_data:
+  metabase_data:

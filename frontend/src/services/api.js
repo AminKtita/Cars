@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 const API_URL = 'http://localhost:8001'; 
 
 // Existing car-related functions
@@ -223,4 +224,46 @@ export const updateProfile = async (formData) => {
     }
   });
   return response.data;
+};
+
+
+// Submit review
+export const submitReview = async (carId, reviewData) => {
+  try {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const response = await axios.post(
+      `${API_URL}/cars/${carId}/reviews`,
+      {
+        comfort: reviewData.comfort,
+        performance: reviewData.performance,
+        interiorDesign: reviewData.interiorDesign,
+        speed: reviewData.speed,
+        comment: reviewData.comment
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Review submission error:', error.response?.data);
+    throw error;
+  }
+};// Get car reviews
+export const getCarReviews = async (carId) => {
+  const response = await axios.get(`${API_URL}/cars/${carId}/reviews`);
+  return response.data;
+};
+
+export const getTopReviews = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/cars/reviews/top`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching top reviews:', error);
+    throw error;
+  }
 };

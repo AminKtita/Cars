@@ -127,7 +127,7 @@ export const Footer = () => {
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-white-400">
             <div className="text-center md:text-left mb-4 md:mb-0">
-              Made with ❤️ by <NavLink to="/" className="hover:text-red-600">Ostrix</NavLink>
+              Made by <NavLink to="/" className="hover:text-red-600">Ostrix</NavLink>
             </div>
             
             <div className="flex gap-4 md:gap-6 flex-wrap justify-center">

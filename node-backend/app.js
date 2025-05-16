@@ -9,6 +9,7 @@ const userActionsRoutes = require('./routes/userActions');
 const favoriteRoutes = require('./routes/favorites');
 const filterPresetRoutes = require('./routes/filterPresets');
 const recommendationRoutes = require('./routes/recommendation');
+
 const path = require('path');
 
 
@@ -30,14 +31,15 @@ app.use(express.json());
 
 // CORS configuration
 app.use(cors({
-  origin: 'http://localhost:5173', // Allow requests from this origin
+  origin: [
+    'http://localhost:5173', // Frontend
+    'http://localhost:5174'  // Admin dashboard
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
   credentials: true, // Allow cookies and credentials
   allowedHeaders: ['Content-Type', 'Authorization','X-Requested-With','Accept'], // Allow these headers
 }));
 
-// Handle preflight requests
-app.options('*', cors()); // Allow all preflight requests
 
 // Connect to MongoDB
 mongoose.connect('mongodb://mongo:27017/scraped_data')
@@ -64,5 +66,5 @@ app.get("/api/profile", authMiddleware, (req, res) => {
 
 // Start the server
 app.listen(8000, () => {
-  console.log('Node.js backend running on port 8000');
+  console.log('Node.js backend running on port 8001');
 });

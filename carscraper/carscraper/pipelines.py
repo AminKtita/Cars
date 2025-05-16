@@ -8,10 +8,12 @@ BRAND_NORMALIZATION = {
     'mercedes benz': 'Mercedes-Benz',
     'mercedes-benz': 'Mercedes-Benz',
     'bmw': 'BMW',
+    'Bmw':'BMW',
     'vw': 'Volkswagen',
 }
 BODY_NORMALIZATION = {
     'SUV/4x4': 'Suv',
+    'Suv/4X4': 'Suv',
     'Suv/4X4': 'Suv',
     'Suv': 'Suv',
     'hatchback': 'Hatchback',
@@ -193,9 +195,40 @@ class MongoDBPipeline:
             item['gearbox_type'] = GEARBOX_NORMALIZATION.get(gearbox, gearbox.title())
 
     def normalize_generic_fields(self, item):
-        """Handle general case normalization for other fields"""
+        """Handle general normalization for generic fields"""
         case_sensitive_fields = ['model_name', 'color', 'country']
-        
+        numeric_fields = ['price', 'power_cv', 'power_cv_fiscal', 'mileage', 'year', 'number_of_cylinder']
+
         for field in case_sensitive_fields:
             if field in item and item[field]:
                 item[field] = item[field].strip().title()
+
+        for field in numeric_fields:
+            if field in item:
+                item[field] = self.convert_to_number(item[field])
+
+
+    def convert_to_number(self, value):
+        """Convert a string like '33,547' or '12 000 km' to int or float"""
+        if isinstance(value, (int, float)):
+            return value
+
+        if isinstance(value, (tuple, list)):
+            value = value[0]
+
+        if not value:
+            return None
+
+        if isinstance(value, str):
+            # Remove commas, spaces, units (like 'km', '€', etc.)
+            cleaned = value.replace(',', '').replace(' ', '').lower()
+            cleaned = ''.join([c for c in cleaned if c.isdigit() or c == '.'])
+
+            try:
+                if '.' in cleaned:
+                    return float(cleaned)
+                return int(cleaned)
+            except ValueError:
+                return None
+
+        return None
